@@ -1,0 +1,2111 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Serene — Painel Executivo do Projeto</title>
+<style>
+:root{
+  --bg:#f5f2ec;
+  --surface:#fffdf9;
+  --surface-2:#f0ece4;
+  --surface-3:#e7e1d7;
+  --ink:#102016;
+  --text:#25382b;
+  --muted:#68776d;
+  --line:#ded8cf;
+  --brand:#459456;
+  --brand-dark:#183822;
+  --nav:#0d1d13;
+  --gold:#d8a323;
+  --red:#c84c42;
+  --blue:#3f708f;
+  --purple:#75599c;
+  --orange:#d78232;
+  --shadow-sm:0 8px 26px rgba(14,32,20,.07);
+  --shadow-lg:0 24px 70px rgba(14,32,20,.12);
+  --radius:16px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:
+    radial-gradient(circle at 0 0,rgba(69,148,86,.10),transparent 30rem),
+    linear-gradient(180deg,#faf8f4 0%,var(--bg) 100%);
+  color:var(--text);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.45;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{min-height:100vh;display:grid;grid-template-columns:244px minmax(0,1fr)}
+.sidebar{
+  position:sticky;top:0;height:100vh;
+  background:var(--nav);color:#e6f1e8;
+  padding:22px 16px;
+  display:flex;flex-direction:column;gap:20px;
+  box-shadow:12px 0 38px rgba(9,25,14,.12);
+  z-index:30;
+}
+.brand{display:flex;align-items:center;gap:12px;padding:2px 8px 14px}
+.logo{width:42px;height:38px;position:relative;flex:0 0 auto}
+.logo:before{content:"";position:absolute;inset:0;border-radius:50%;background:var(--brand)}
+.logo:after{content:"";position:absolute;right:3px;top:6px;width:26px;height:26px;border-radius:50%;background:#fffdf9;box-shadow:12px 0 0 -4px var(--nav)}
+.brand strong{font-size:17px;color:#fff;display:block;letter-spacing:.2px}
+.brand span{display:block;font-size:10px;color:#9fb4a5;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.nav-group{display:grid;gap:5px}
+.nav-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#76907d;font-weight:800;padding:8px 10px 5px}
+.nav-btn{
+  width:100%;border:0;background:transparent;color:#b9c9bd;text-align:left;
+  border-radius:10px;padding:10px 11px;display:flex;align-items:center;gap:10px;
+  font-weight:700;font-size:13px;transition:.16s ease;
+}
+.nav-btn:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav-btn.active{background:rgba(69,148,86,.22);color:#fff;box-shadow:inset 3px 0 0 var(--brand)}
+.nav-icon{width:18px;height:18px;display:inline-grid;place-items:center;color:#9fc8a7}
+.sidebar-bottom{margin-top:auto;display:grid;gap:8px}
+.sidebar-note{font-size:11px;color:#8fa394;padding:10px;line-height:1.45;border-top:1px solid rgba(255,255,255,.08)}
+.main{min-width:0}
+.topbar{
+  position:sticky;top:0;z-index:25;
+  background:rgba(250,248,244,.88);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(222,216,207,.8);
+  min-height:74px;padding:14px 26px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+}
+.top-title h1{margin:0;color:var(--ink);font-size:20px;line-height:1.2}
+.top-title p{margin:3px 0 0;color:var(--muted);font-size:12px}
+.top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.btn{
+  border:1px solid var(--line);background:var(--surface);color:var(--text);
+  padding:9px 12px;border-radius:10px;font-weight:800;font-size:12px;
+  display:inline-flex;align-items:center;gap:7px;box-shadow:0 4px 14px rgba(16,32,22,.04);
+}
+.btn:hover{transform:translateY(-1px);border-color:#bdb5aa}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.dark{background:var(--brand-dark);border-color:var(--brand-dark);color:#fff}
+.btn.danger{color:#a53730;background:#fff3f1;border-color:#efc5c1}
+.btn.ghost{background:transparent;box-shadow:none}
+.btn.small{padding:6px 9px;font-size:11px;border-radius:8px}
+.content{padding:22px 26px 60px;max-width:1600px;margin:0 auto}
+.view{display:none}
+.view.active{display:block}
+.page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:18px}
+.page-head h2{margin:0;color:var(--ink);font-size:22px}
+.page-head p{margin:5px 0 0;color:var(--muted);font-size:13px;max-width:800px}
+.date-chip{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:8px 11px;background:var(--surface);color:var(--muted);font-size:12px;white-space:nowrap}
+.grid{display:grid;gap:14px}
+.kpis{grid-template-columns:1.15fr repeat(5,minmax(135px,1fr))}
+.card{
+  background:rgba(255,253,249,.96);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);
+  padding:17px;
+}
+.card.flat{box-shadow:none}
+.card-title{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:13px}
+.card-title h3{margin:0;color:var(--ink);font-size:15px}
+.card-title p{margin:3px 0 0;color:var(--muted);font-size:11px}
+.metric-card{min-height:124px}
+.metric-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:900}
+.metric-value{font-size:29px;line-height:1;color:var(--ink);font-weight:900;margin:11px 0 7px;letter-spacing:-1px}
+.metric-sub{font-size:11px;color:var(--muted)}
+.readiness-card{
+  background:linear-gradient(135deg,#10261a 0%,#1c4529 100%);
+  color:#e8f4ea;border-color:#204a2d;display:grid;grid-template-columns:112px 1fr;gap:16px;align-items:center;
+}
+.readiness-card .metric-label,.readiness-card .metric-sub{color:#adbfaf}
+.readiness-card .metric-value{color:#fff}
+.gauge{
+  width:104px;height:104px;border-radius:50%;display:grid;place-items:center;
+  background:conic-gradient(var(--brand) 0deg,#2a3d30 0deg);
+}
+.gauge-inner{
+  width:76px;height:76px;border-radius:50%;background:#10261a;display:grid;place-items:center;
+  color:#fff;font-size:24px;font-weight:900;line-height:1;
+}
+.gauge-inner small{font-size:11px;color:#adc0b1;margin-left:1px}
+.pill{
+  display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 8px;
+  font-size:10px;font-weight:900;border:1px solid transparent;white-space:nowrap;
+}
+.pill.ok{background:#e5f4e7;color:#246631;border-color:#bfe2c5}
+.pill.warn{background:#fff4d5;color:#80600c;border-color:#efd687}
+.pill.risk{background:#fdebea;color:#a43730;border-color:#efbbb7}
+.pill.info{background:#e8f2f8;color:#315f7d;border-color:#c9ddea}
+.pill.neutral{background:#efebe5;color:#5b5148;border-color:#ddd5cb}
+.two{grid-template-columns:minmax(0,1.25fr) minmax(340px,.75fr)}
+.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.section-gap{margin-top:14px}
+.attention-list{display:grid;gap:8px}
+.attention-item{
+  display:grid;grid-template-columns:8px minmax(0,1fr) auto;gap:11px;align-items:start;
+  padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;
+}
+.attention-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;background:var(--gold)}
+.attention-item.critical .attention-dot{background:var(--red)}
+.attention-item.good .attention-dot{background:var(--brand)}
+.attention-item strong{color:var(--ink);font-size:12px;display:block}
+.attention-item p{margin:3px 0 0;color:var(--muted);font-size:11px}
+.area-list{display:grid;gap:12px}
+.area-row{display:grid;grid-template-columns:132px minmax(0,1fr) 47px;gap:10px;align-items:center;font-size:12px}
+.area-row strong{color:var(--ink)}
+.progress{height:8px;background:#ebe6df;border-radius:999px;overflow:hidden}
+.progress>span{display:block;height:100%;border-radius:999px;background:var(--brand)}
+.status-strip{display:flex;height:12px;border-radius:999px;overflow:hidden;background:#ece7e0;margin-bottom:13px}
+.status-strip span{height:100%;min-width:2px}
+.legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 14px;font-size:11px;color:var(--muted)}
+.legend-item{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.legend-item>span:first-child{display:flex;align-items:center;gap:7px}
+.dot{width:8px;height:8px;border-radius:50%}
+.milestone-list{display:grid;gap:9px}
+.milestone{
+  display:grid;grid-template-columns:88px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);
+}
+.milestone:last-child{border-bottom:0}
+.milestone-date{font-size:10px;font-weight:900;color:var(--brand-dark);text-transform:uppercase;letter-spacing:.5px}
+.milestone strong{display:block;color:var(--ink);font-size:12px}
+.milestone p{margin:2px 0 0;color:var(--muted);font-size:11px}
+.insight{
+  border-radius:14px;background:linear-gradient(135deg,#f8efd6,#fffaf0);
+  border:1px solid #ead79b;padding:15px;
+}
+.insight h3{margin:0 0 8px;color:#4f3a08;font-size:14px}
+.insight p{margin:0;color:#6d5720;font-size:12px}
+.toolbar{
+  display:flex;gap:9px;align-items:center;flex-wrap:wrap;
+  padding:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-bottom:13px;
+}
+.field,.toolbar input,.toolbar select{
+  background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px 10px;color:var(--text);font-size:12px;
+}
+.toolbar input{min-width:220px;flex:1}
+.toolbar select{min-width:145px}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+table{width:100%;border-collapse:collapse;min-width:1060px}
+th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:11.5px}
+th{
+  background:#13271a;color:#cfe2d2;font-size:9.5px;text-transform:uppercase;letter-spacing:.7px;
+  position:sticky;top:0;z-index:3;
+}
+tbody tr{transition:.12s ease}
+tbody tr:hover{background:#fbf8f3}
+tbody tr:last-child td{border-bottom:0}
+.clickable{cursor:pointer}
+.name-cell strong{display:block;color:var(--ink);font-size:12px;line-height:1.35}
+.name-cell span{display:block;color:var(--muted);font-size:10.5px;margin-top:3px}
+.deadline{font-weight:800;color:var(--ink);white-space:nowrap}
+.deadline.overdue{color:var(--red)}
+.deadline.soon{color:#8a6509}
+.mini-progress{min-width:110px}
+.mini-progress .progress{margin-bottom:4px}
+.mini-progress small{color:var(--muted)}
+.empty{padding:28px;text-align:center;color:var(--muted);font-size:12px}
+.timeline-shell{overflow:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.timeline-head,.timeline-row{
+  display:grid;grid-template-columns:240px minmax(900px,1fr);
+}
+.timeline-label{
+  position:sticky;left:0;z-index:4;background:var(--surface);
+  border-right:1px solid var(--line);border-bottom:1px solid var(--line);
+  padding:11px 12px;min-height:52px;
+}
+.timeline-label strong{display:block;color:var(--ink);font-size:11px}
+.timeline-label span{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+.timeline-head .timeline-label{background:#13271a;color:#cfe2d2}
+.week-heads{
+  display:grid;border-bottom:1px solid var(--line);background:#13271a;
+}
+.week-head{
+  color:#cfe2d2;border-right:1px solid rgba(255,255,255,.08);padding:9px;text-align:center;
+  font-size:9.5px;text-transform:uppercase;letter-spacing:.4px;min-height:52px;
+}
+.timeline-track{
+  position:relative;min-height:52px;border-bottom:1px solid var(--line);
+  background-image:linear-gradient(to right,var(--line) 1px,transparent 1px);
+  background-size:var(--week-width,100px) 100%;
+}
+.timeline-bar{
+  position:absolute;top:12px;height:28px;border-radius:8px;padding:0 9px;
+  display:flex;align-items:center;color:#fff;font-size:9.5px;font-weight:900;
+  overflow:hidden;white-space:nowrap;text-overflow:ellipsis;box-shadow:0 4px 11px rgba(0,0,0,.12);
+}
+.timeline-bar::after{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:var(--task-progress,0%);
+  background:rgba(255,255,255,.18);pointer-events:none;
+}
+.timeline-bar span{position:relative;z-index:1;overflow:hidden;text-overflow:ellipsis}
+.risk-layout{display:grid;grid-template-columns:minmax(480px,.92fr) minmax(0,1.08fr);gap:14px}
+.risk-matrix-wrap{overflow:auto}
+.risk-matrix{
+  display:grid;grid-template-columns:44px repeat(5,minmax(72px,1fr));
+  grid-template-rows:repeat(5,82px) 34px;min-width:500px;
+}
+.risk-axis-y{
+  display:grid;place-items:center;font-size:10px;color:var(--muted);font-weight:800;border-right:1px solid var(--line);border-bottom:1px solid var(--line)
+}
+.risk-cell{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:5px;display:flex;flex-wrap:wrap;gap:4px;align-content:flex-start}
+.risk-cell.low{background:#edf7ef}
+.risk-cell.med{background:#fff6dc}
+.risk-cell.high{background:#fdecea}
+.risk-token{
+  width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#173b23;color:#fff;
+  font-size:8px;font-weight:900;border:2px solid rgba(255,255,255,.8);box-shadow:0 2px 7px rgba(0,0,0,.14)
+}
+.risk-axis-x{display:grid;place-items:center;font-size:9px;color:var(--muted);font-weight:800;border-right:1px solid var(--line)}
+.risk-list{display:grid;gap:9px}
+.risk-card{
+  border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff;
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;
+}
+.risk-card h4{margin:0;color:var(--ink);font-size:12px}
+.risk-card p{margin:4px 0 0;color:var(--muted);font-size:10.5px}
+.risk-score{font-size:20px;font-weight:900;color:var(--ink)}
+.rank-list{display:grid;gap:8px}
+.rank-card{
+  border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff;
+  display:grid;grid-template-columns:38px minmax(0,1fr) 54px;gap:10px;align-items:start;
+}
+.rank-number{width:30px;height:30px;border-radius:9px;background:#e9f4eb;color:#246631;display:grid;place-items:center;font-weight:900;font-size:12px}
+.rank-card strong{display:block;color:var(--ink);font-size:12px}
+.rank-card p{margin:3px 0 0;color:var(--muted);font-size:10.5px}
+.rank-score{text-align:right;font-size:18px;font-weight:900;color:var(--ink)}
+.card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.info-card{border:1px solid var(--line);border-radius:13px;padding:13px;background:#fff}
+.info-card h4{margin:0 0 7px;color:var(--ink);font-size:12px}
+.info-card p{margin:8px 0 0;color:var(--muted);font-size:10.5px}
+.policy-table{min-width:760px}
+.source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.source-card{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff}
+.source-card strong{display:block;color:var(--ink);font-size:12px;margin-bottom:4px}
+.source-card p{margin:0;color:var(--muted);font-size:10.5px}
+.settings-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(420px,1.2fr);gap:14px}
+.form-card label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:900;margin-bottom:5px}
+.form-card input,.form-card select,.form-card textarea{
+  width:100%;background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px 10px;color:var(--text);font-size:12px
+}
+.form-card textarea{min-height:84px;resize:vertical}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.form-grid .full{grid-column:1/-1}
+.weight-row{display:grid;grid-template-columns:1fr 90px;gap:10px;align-items:center;margin-bottom:9px}
+.weight-row span{font-size:11px;color:var(--text)}
+.quality-list{display:grid;gap:8px}
+.quality-item{border:1px solid var(--line);border-radius:11px;padding:10px;background:#fff;font-size:11px}
+.quality-item strong{color:var(--ink)}
+.dataset-tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:11px}
+.dataset-tab{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:9px;padding:7px 9px;font-size:11px;font-weight:800}
+.dataset-tab.active{background:var(--brand-dark);border-color:var(--brand-dark);color:#fff}
+.raw-json{width:100%;min-height:360px;background:#101a13;color:#cde1d1;border:1px solid #263a2b;border-radius:12px;padding:12px;font:11px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;resize:vertical}
+.drawer-backdrop{position:fixed;inset:0;background:rgba(7,18,11,.38);z-index:70;display:none}
+.drawer-backdrop.open{display:block}
+.drawer{
+  position:fixed;top:0;right:0;height:100vh;width:min(540px,94vw);
+  background:var(--surface);z-index:80;transform:translateX(102%);transition:transform .2s ease;
+  box-shadow:-20px 0 60px rgba(5,17,10,.22);display:flex;flex-direction:column;
+}
+.drawer.open{transform:translateX(0)}
+.drawer-head{padding:18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.drawer-head h3{margin:0;color:var(--ink);font-size:17px}
+.drawer-body{padding:17px;overflow:auto;display:grid;gap:11px}
+.drawer-actions{margin-top:auto;padding:14px 17px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end;background:#faf8f4}
+.drawer-field label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:900;margin-bottom:5px}
+.drawer-field input,.drawer-field select,.drawer-field textarea{
+  width:100%;background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px 10px;color:var(--text);font-size:12px
+}
+.drawer-field textarea{min-height:76px;resize:vertical}
+.drawer-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.drawer-grid .full{grid-column:1/-1}
+.mobile-menu{display:none}
+.toast{
+  position:fixed;right:20px;bottom:20px;z-index:100;background:#112319;color:#e8f4ea;
+  border:1px solid #284b31;border-radius:11px;padding:11px 14px;font-size:12px;font-weight:700;
+  box-shadow:var(--shadow-lg);opacity:0;transform:translateY(10px);pointer-events:none;transition:.18s ease
+}
+.toast.show{opacity:1;transform:translateY(0)}
+.hidden-file{display:none}
+@media(max-width:1220px){
+  .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .readiness-card{grid-column:span 2}
+  .two,.risk-layout,.settings-grid{grid-template-columns:1fr}
+  .card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:900px){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:fixed;left:0;top:0;bottom:0;width:244px;transform:translateX(-102%);transition:.2s ease;z-index:60}
+  .sidebar.open{transform:translateX(0)}
+  .mobile-menu{display:inline-flex}
+  .topbar{padding:12px 14px}
+  .content{padding:18px 14px 50px}
+  .top-actions .desktop-only{display:none}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .readiness-card{grid-column:1/-1}
+  .three,.four{grid-template-columns:1fr 1fr}
+}
+@media(max-width:620px){
+  .kpis,.three,.four,.card-grid,.source-grid{grid-template-columns:1fr}
+  .readiness-card{grid-template-columns:94px 1fr}
+  .gauge{width:88px;height:88px}.gauge-inner{width:64px;height:64px;font-size:20px}
+  .page-head{display:block}.date-chip{margin-top:10px;width:max-content}
+  .form-grid,.drawer-grid{grid-template-columns:1fr}.form-grid .full,.drawer-grid .full{grid-column:auto}
+  .legend{grid-template-columns:1fr}
+  .area-row{grid-template-columns:105px 1fr 42px}
+}
+@media print{
+  .sidebar,.topbar,.toolbar,.drawer,.drawer-backdrop,.no-print{display:none!important}
+  .app{display:block}.content{padding:0}.view{display:none!important}.view.active{display:block!important}
+  body{background:#fff}.card{box-shadow:none;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<script id="app-data" type="application/json">{
+  "meta": {
+    "title": "Serene — Painel Executivo do Projeto",
+    "subtitle": "Portfólio, cronograma, riscos, operação e go-to-market em uma única base editável.",
+    "reportDate": "2026-07-13",
+    "externalClientsPercent": 70,
+    "notes": "",
+    "dueSoonDays": 7,
+    "readinessWeights": {
+      "progress": 55,
+      "blockers": 20,
+      "deadlines": 15,
+      "risks": 10
+    }
+  },
+  "roadmap": [
+    {
+      "id": "F0",
+      "area": "Administrativo",
+      "name": "Mobilização e desbloqueios Baldussi",
+      "owner": "Administrativo / Financeiro",
+      "start": "2026-06-23",
+      "end": "2026-06-26",
+      "status": "Em andamento",
+      "progress": 95,
+      "crit": "Baixa",
+      "priority": "P2",
+      "dependency": "Interface V1, regras dos planos, Stripe, Amazon e contas de e-mail",
+      "acceptance": "Ambiente e decisões mínimas disponíveis",
+      "notes": ""
+    },
+    {
+      "id": "F1",
+      "area": "Produto",
+      "name": "Novo layout + landing page + refactor interno",
+      "start": "2026-06-27",
+      "end": "2026-07-05",
+      "status": "Concluído",
+      "progress": 100,
+      "crit": "Alta",
+      "dependency": "Definição final da interface V1",
+      "acceptance": "Fluxos principais preservados e nova UI aplicada",
+      "owner": "Produto / Desenvolvimento",
+      "notes": "",
+      "priority": "P0"
+    },
+    {
+      "id": "F7",
+      "area": "Infraestrutura",
+      "name": "Testes Amazon S3/ECS",
+      "start": "2026-07-04",
+      "end": "2026-07-10",
+      "status": "Concluído",
+      "progress": 100,
+      "crit": "Alta",
+      "dependency": "Acessos Amazon",
+      "acceptance": "Relatório técnico de custo, viabilidade e riscos",
+      "owner": "Infraestrutura",
+      "notes": "",
+      "priority": "P0"
+    },
+    {
+      "id": "F2",
+      "area": "Produto",
+      "name": "Integração com  Zoom e Microsoft Teams",
+      "owner": "Produto / Desenvolvimento",
+      "start": "2026-07-06",
+      "end": "2026-07-17",
+      "status": "Em andamento",
+      "progress": 70,
+      "crit": "Alta",
+      "priority": "P0",
+      "dependency": "Validação da abordagem de bot web",
+      "acceptance": "Decisão técnica registrada e caminho de integração definido",
+      "notes": ""
+    },
+    {
+      "id": "F9",
+      "area": "Produto",
+      "name": "Teste mobile web",
+      "owner": "Produto / Desenvolvimento",
+      "start": "2026-07-06",
+      "end": "2026-07-17",
+      "status": "Próximo",
+      "progress": 0,
+      "crit": "Média",
+      "priority": "P1",
+      "dependency": "Serene estável",
+      "acceptance": "Gravação rodando bem em segundo plano no mobile",
+      "notes": ""
+    },
+    {
+      "id": "F3",
+      "area": "Produto",
+      "name": "Sistema de planos parametrizáveis",
+      "start": "2026-07-12",
+      "end": "2026-07-19",
+      "status": "Concluído",
+      "progress": 100,
+      "crit": "Alta",
+      "dependency": "Regras de negócio e modalidades fechadas",
+      "acceptance": "Planos aplicando limites de uso conforme configuração",
+      "owner": "Produto / Desenvolvimento",
+      "notes": "",
+      "priority": "P0"
+    },
+    {
+      "id": "F4",
+      "area": "Produto",
+      "name": "Integração Stripe",
+      "owner": "Produto / Desenvolvimento",
+      "start": "2026-07-20",
+      "end": "2026-07-24",
+      "status": "Em andamento",
+      "progress": 65,
+      "crit": "Alta",
+      "priority": "P0",
+      "dependency": "Conta Stripe e documentação de produção",
+      "acceptance": "Checkout testado e estrutura pronta para produção",
+      "notes": ""
+    },
+    {
+      "id": "F5",
+      "area": "Produto",
+      "name": "Submissão GCP e extensão",
+      "start": "2026-07-27",
+      "end": "2026-08-02",
+      "status": "Em andamento",
+      "progress": 90,
+      "crit": "Média",
+      "dependency": "Requisitos de publicação e contas aprovadas",
+      "acceptance": "Submissões realizadas e pendências documentadas",
+      "owner": "Produto / Desenvolvimento",
+      "notes": "",
+      "priority": "P1"
+    },
+    {
+      "id": "F6",
+      "area": "Produto",
+      "name": "Serene Desktop",
+      "start": "2026-07-27",
+      "end": "2026-08-02",
+      "status": "Em andamento",
+      "progress": 75,
+      "crit": "Média",
+      "dependency": "Comportamento de gravação e sincronização",
+      "acceptance": "Gravação de tela/janela sincronizada ao servidor",
+      "owner": "Produto / Desenvolvimento",
+      "notes": "",
+      "priority": "P1"
+    },
+    {
+      "id": "F8",
+      "area": "Infraestrutura",
+      "name": "Stress test 100 reuniões simultâneas",
+      "start": "2026-08-10",
+      "end": "2026-08-17",
+      "status": "Pendente",
+      "progress": 0,
+      "crit": "Alta",
+      "dependency": "Contas de e-mail para rotação dos bots e infraestrutura estável",
+      "acceptance": "Limites da estrutura documentados e gargalos mapeados",
+      "owner": "Infraestrutura",
+      "notes": "",
+      "priority": "P0"
+    },
+    {
+      "id": "ADM1",
+      "area": "Administrativo",
+      "name": "Definição de ferramenta de ERP",
+      "start": "2026-07-02",
+      "end": "2026-07-17",
+      "status": "Em andamento",
+      "progress": 90,
+      "crit": "Média",
+      "dependency": "Escolha de processo financeiro/operacional",
+      "acceptance": "ERP definido para controle financeiro e administrativo",
+      "owner": "Administrativo / Financeiro",
+      "notes": "",
+      "priority": "P1"
+    },
+    {
+      "id": "ADM2",
+      "area": "Administrativo",
+      "name": "Conta bancária",
+      "start": "2026-07-01",
+      "end": "2026-07-10",
+      "status": "Concluído",
+      "progress": 100,
+      "crit": "Alta",
+      "dependency": "Contrato social / abertura bancária",
+      "acceptance": "Conta ativa para recebimento e Stripe",
+      "owner": "Administrativo / Financeiro",
+      "notes": "",
+      "priority": "P0"
+    },
+    {
+      "id": "ADM3",
+      "area": "Administrativo",
+      "name": "Stripe",
+      "owner": "Administrativo / Financeiro",
+      "start": "2026-07-08",
+      "end": "2026-07-17",
+      "status": "Próximo",
+      "progress": 90,
+      "crit": "Alta",
+      "priority": "P0",
+      "dependency": "Conta bancária aprovada",
+      "acceptance": "Conta confirmada e apta a produção",
+      "notes": ""
+    },
+    {
+      "id": "ADM4",
+      "area": "Administrativo",
+      "name": "Código de parceiro no Stripe / comissionamento",
+      "start": "2026-07-08",
+      "end": "2026-07-17",
+      "status": "Concluído",
+      "progress": 100,
+      "crit": "Média",
+      "dependency": "Definição comercial; alternativa por cupom e comissionamento manual",
+      "acceptance": "Fluxo de parceiro documentado",
+      "owner": "Administrativo / Financeiro",
+      "notes": "",
+      "priority": "P1"
+    },
+    {
+      "id": "ADM5",
+      "area": "Jurídico",
+      "name": "Registro de software e marca",
+      "start": "2026-07-08",
+      "end": "2026-07-10",
+      "status": "Em andamento",
+      "progress": 80,
+      "crit": "Alta",
+      "dependency": "Contrato social",
+      "acceptance": "Protocolo de registro iniciado",
+      "owner": "Jurídico",
+      "notes": "",
+      "priority": "P0"
+    },
+    {
+      "id": "MKT1",
+      "area": "Marketing",
+      "name": "E-mails transacionais da ferramenta",
+      "start": "2026-07-01",
+      "end": "2026-07-10",
+      "status": "Em andamento",
+      "progress": 80,
+      "crit": "Alta",
+      "dependency": "Templates finais, eventos de produto e SMTP",
+      "acceptance": "E-mails de onboarding, pós-reunião, trial e limite ativos",
+      "owner": "Marketing",
+      "notes": "",
+      "priority": "P0"
+    },
+    {
+      "id": "MKT2",
+      "area": "Marketing",
+      "name": "Modais da ferramenta",
+      "start": "2026-07-01",
+      "end": "2026-07-10",
+      "status": "Em andamento",
+      "progress": 70,
+      "crit": "Alta",
+      "dependency": "Copy, gatilhos de uso e estados de plano",
+      "acceptance": "Modais ativos para ativação, limite, upgrade e aviso",
+      "owner": "Marketing",
+      "notes": "",
+      "priority": "P0"
+    },
+    {
+      "id": "TST1",
+      "area": "Testes",
+      "name": "Testes internos",
+      "owner": "Produto / QA",
+      "start": "2026-07-06",
+      "end": "2026-07-17",
+      "status": "Em andamento",
+      "progress": 100,
+      "crit": "Alta",
+      "priority": "P0",
+      "dependency": "Ambiente estável e critérios de aceite",
+      "acceptance": "Lista de bugs e validações internas fechadas",
+      "notes": ""
+    },
+    {
+      "id": "TST3",
+      "area": "Testes",
+      "name": "Execução dos testes externos",
+      "start": "2026-07-13",
+      "end": "2026-07-26",
+      "status": "Pendente",
+      "progress": 0,
+      "crit": "Alta",
+      "dependency": "Clientes definidos e fluxos críticos estabilizados",
+      "acceptance": "Feedback real consolidado por perfil de cliente",
+      "owner": "Produto / QA",
+      "notes": "",
+      "priority": "P0"
+    }
+  ],
+  "policyItems": [
+    {
+      "theme": "Estados da conta",
+      "guideline": "Teste ativo, ativo, upgrade/downgrade, restrito/suspenso e excluído.",
+      "status": "Definido"
+    },
+    {
+      "theme": "Upgrade de plano",
+      "guideline": "Liberação imediata após confirmação; cobrança proporcional (pro-rata).",
+      "status": "Definido"
+    },
+    {
+      "theme": "Downgrade de plano",
+      "guideline": "Agendado para o próximo ciclo; recursos excedentes em modo consulta.",
+      "status": "Definido"
+    },
+    {
+      "theme": "Renovação anual",
+      "guideline": "Avisos em D-30, D-7, D-1 e D0.",
+      "status": "Definido"
+    },
+    {
+      "theme": "Inadimplência",
+      "guideline": "D0 falha; D1 restrição; D5 suspensão; D15 cancelamento administrativo.",
+      "status": "Definido"
+    },
+    {
+      "theme": "Retenção pós-cancelamento",
+      "guideline": "Janela de segurança 30 dias; fila de exclusão 60 dias; expurgo total até 90 dias.",
+      "status": "Definido"
+    },
+    {
+      "theme": "Consentimento",
+      "guideline": "Responsabilidade do organizador; aceite obrigatório nos termos; bot visível ou aviso via extensão.",
+      "status": "Definido"
+    }
+  ],
+  "marketingCards": [
+    {
+      "title": "E-mails transacionais",
+      "status": "Prazo 10/07",
+      "description": "Devem partir de evento real do usuário e entregar valor no inbox: resumo, decisões, tarefas, trial e limite.",
+      "tone": "warn"
+    },
+    {
+      "title": "Modais",
+      "status": "Prazo 10/07",
+      "description": "Devem educar sem poluir: ativação, limite, upgrade, erro/processamento e consentimento.",
+      "tone": "warn"
+    },
+    {
+      "title": "Base instalada",
+      "status": "Oportunidade forte",
+      "description": "Cross-sell via CS reduz CAC, mas depende de mapear contas e plataforma predominante.",
+      "tone": "ok"
+    },
+    {
+      "title": "ICP onda 1",
+      "status": "Foco imediato",
+      "description": "Vendas B2B, CS e consultorias/agências: dor clara, decisor mais direto e aderência ao MVP.",
+      "tone": "ok"
+    },
+    {
+      "title": "Compliance",
+      "status": "Diferencial",
+      "description": "LGPD, dados no Brasil, hierarquia e auditabilidade sustentam mercados regulados.",
+      "tone": "info"
+    },
+    {
+      "title": "Produto brasileiro",
+      "status": "Mensagem-chave",
+      "description": "Não vender IA genérica. Vender execução, evidência, monitoria e melhoria operacional.",
+      "tone": "info"
+    }
+  ],
+  "icps": [
+    {
+      "rank": 1,
+      "name": "Vendas B2B consultivas",
+      "wave": "Onda 1",
+      "buyer": "Head de Vendas / CRO",
+      "argument": "Monitoria de 100% das reuniões",
+      "score": 95
+    },
+    {
+      "rank": 2,
+      "name": "Customer Success",
+      "wave": "Onda 1",
+      "buyer": "Head de CS",
+      "argument": "Sinais de risco nas conversas",
+      "score": 90
+    },
+    {
+      "rank": 3,
+      "name": "Consultorias e agências",
+      "wave": "Onda 1",
+      "buyer": "Sócio / COO",
+      "argument": "Registro auditável sem esforço",
+      "score": 88
+    },
+    {
+      "rank": 4,
+      "name": "Base instalada de telefonia",
+      "wave": "Cross-sell",
+      "buyer": "Operações / Qualidade",
+      "argument": "Fornecedor já homologado + avaliação de 100% das interações",
+      "score": 92
+    },
+    {
+      "rank": 5,
+      "name": "Seguros / fintechs",
+      "wave": "Onda 2",
+      "buyer": "Comercial + compliance",
+      "argument": "Evidência e compliance em 100% das interações",
+      "score": 82
+    }
+  ],
+  "risks": [
+    {
+      "name": "Stripe depende da conta bancária",
+      "area": "ADM/Produto",
+      "prob": 5,
+      "impact": 5,
+      "mitigation": "Resolver banco como prioridade executiva. Sem banco, Stripe fica bloqueado; sem Stripe, cobrança, trial ending e upgrade não fecham.",
+      "owner": "ADM/Produto",
+      "status": "Aberto",
+      "due": ""
+    },
+    {
+      "name": "Registro de software/marca depende do contrato social",
+      "area": "Jurídico",
+      "prob": 4,
+      "impact": 4,
+      "mitigation": "Separar documentação societária e iniciar preparação dos arquivos de software/hash antes do protocolo.",
+      "owner": "Jurídico",
+      "status": "Aberto",
+      "due": ""
+    },
+    {
+      "name": "Prazos de e-mails e modais em 10/07",
+      "area": "Marketing/Produto",
+      "prob": 4,
+      "impact": 4,
+      "mitigation": "Cortar escopo para transacionais essenciais: boas-vindas, resumo pronto, trial ending, limite de plano e erro de processamento.",
+      "owner": "Marketing/Produto",
+      "status": "Aberto",
+      "due": ""
+    },
+    {
+      "name": "Teams/Zoom destravam ICP corporativo",
+      "area": "Produto/GTM",
+      "prob": 4,
+      "impact": 5,
+      "mitigation": "Tratar Teams primeiro como prova técnica com aceite claro; comunicar ao GTM que base instalada deve iniciar por Meet ou por piloto controlado.",
+      "owner": "Produto/GTM",
+      "status": "Aberto",
+      "due": ""
+    },
+    {
+      "name": "Teste externo antes da estabilização cria ruído comercial",
+      "area": "Testes/GTM",
+      "prob": 3,
+      "impact": 4,
+      "mitigation": "Definir clientes tolerantes a beta, escopo de teste, roteiro de feedback e termo de expectativa.",
+      "owner": "Testes/GTM",
+      "status": "Aberto",
+      "due": ""
+    },
+    {
+      "name": "Stress test pode mapear limite, não garantir escala",
+      "area": "Infraestrutura",
+      "prob": 3,
+      "impact": 4,
+      "mitigation": "Comunicar internamente que o teste entrega diagnóstico técnico; decisão de escala exige plano de infraestrutura após o resultado.",
+      "owner": "Infraestrutura",
+      "status": "Aberto",
+      "due": ""
+    }
+  ],
+  "mitigationPlan": [
+    {
+      "priority": "1",
+      "front": "Banco / Stripe",
+      "owner": "Owner financeiro + gestor do projeto",
+      "action": "Fechar conta bancária e checklist de produção do Stripe."
+    },
+    {
+      "priority": "2",
+      "front": "Marketing 10/07",
+      "owner": "Produto + Marketing",
+      "action": "Publicar versão mínima dos e-mails e modais críticos."
+    },
+    {
+      "priority": "3",
+      "front": "Teams",
+      "owner": "Produto / Dev",
+      "action": "Registrar decisão técnica: viável, inviável ou dependente de alternativa."
+    },
+    {
+      "priority": "4",
+      "front": "Testes externos",
+      "owner": "CS / Produto",
+      "action": "Definir clientes, escopo, critérios de sucesso e roteiro de coleta."
+    },
+    {
+      "priority": "5",
+      "front": "Jurídico",
+      "owner": "Sócios / Jurídico",
+      "action": "Separar contrato social e preparar documentação de registro."
+    }
+  ],
+  "sources": [
+    {
+      "name": "PRD — Meeting Recorder",
+      "use": "Missão, objetivos, personas, dashboard de métricas, monitoria, prompts, RBAC, roadmap macro do módulo."
+    },
+    {
+      "name": "Aditivo — Proposta de Aprimoramento",
+      "use": "Escopo complementar até 17/08: layout, planos, Stripe, Teams, Desktop, GCP/extensão, Amazon e stress test."
+    },
+    {
+      "name": "Política Operacional Serene",
+      "use": "Planos, cobrança, upgrade/downgrade, inadimplência, cancelamento, retenção e governança."
+    },
+    {
+      "name": "ICP Marketing",
+      "use": "10 perfis ideais de cliente, ondas de priorização, dores, decisores e argumentos comerciais."
+    },
+    {
+      "name": "ICP Bônus — Base Instalada",
+      "use": "Estratégia de cross-sell para grandes contas da operação de telefonia."
+    },
+    {
+      "name": "Nutrição de Leads Serene",
+      "use": "Régua de ativação, e-mails transacionais, digest, conversão, expansão e tom de voz."
+    },
+    {
+      "name": "Informações adicionais do usuário",
+      "use": "Status ADM, marketing, testes internos/externos, banco, Stripe, registro de software e marca."
+    }
+  ],
+  "decisions": [
+    {
+      "date": "09-10/07",
+      "title": "Fechar e-mails transacionais e modais",
+      "note": "Sem isso, onboarding, trial e monetização perdem força."
+    },
+    {
+      "date": "Até 12/07",
+      "title": "Validar abordagem técnica do Teams",
+      "note": "Define se ICP base instalada pode avançar com narrativa multi-plataforma."
+    },
+    {
+      "date": "Antes de 20/07",
+      "title": "Desbloquear banco e Stripe",
+      "note": "Sem conta bancária, a integração de cobrança entra travada."
+    },
+    {
+      "date": "Antes dos testes externos",
+      "title": "Fechar critérios de piloto",
+      "note": "Evita que teste externo vire lista difusa de opinião sem aprendizado acionável."
+    },
+    {
+      "date": "Até 17/08",
+      "title": "Concluir stress test 100 reuniões",
+      "note": "Entrega limite técnico documentado e insumo de escala."
+    }
+  ],
+  "archivedOpsCards": [
+    {
+      "title": "Conta bancária",
+      "status": "Em andamento",
+      "description": "Desbloqueia Stripe e recebimentos.",
+      "tone": "warn"
+    },
+    {
+      "title": "Stripe",
+      "status": "Aguardando conta banco",
+      "description": "Caminho parceiro via cupom + comissão manual.",
+      "tone": "risk"
+    },
+    {
+      "title": "ERP",
+      "status": "Em andamento",
+      "description": "Precisa ser definido antes de rotinas financeiras escalarem.",
+      "tone": "warn"
+    },
+    {
+      "title": "Registro software/marca",
+      "status": "Aguardando contrato social",
+      "description": "Bloqueio jurídico-administrativo.",
+      "tone": "risk"
+    },
+    {
+      "title": "Upgrade/Downgrade",
+      "status": "Diretriz definida",
+      "description": "Upgrade imediato; downgrade no próximo ciclo.",
+      "tone": "ok"
+    },
+    {
+      "title": "Retenção/expurgo",
+      "status": "Diretriz definida",
+      "description": "Exportação/reativação 30d, hard delete 60–90d.",
+      "tone": "ok"
+    }
+  ]
+}</script>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div><strong>Serene</strong><span>Project Control</span></div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">Gestão</div>
+      <button class="nav-btn" data-view="overview"><span class="nav-icon">◫</span>Visão executiva</button>
+      <button class="nav-btn" data-view="portfolio"><span class="nav-icon">≡</span>Portfólio</button>
+      <button class="nav-btn active" data-view="timeline"><span class="nav-icon">↔</span>Cronograma</button>
+      <button class="nav-btn" data-view="risks"><span class="nav-icon">◇</span>Riscos</button>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">Negócio</div>
+      <button class="nav-btn" data-view="gtm"><span class="nav-icon">↗</span>GTM &amp; Operação</button>
+      <button class="nav-btn" data-view="governance"><span class="nav-icon">✓</span>Governança</button>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">Configuração</div>
+      <button class="nav-btn" data-view="data"><span class="nav-icon">✎</span>Dados e parâmetros</button>
+    </div>
+    <div class="sidebar-bottom">
+      <button class="nav-btn" onclick="saveLocal()"><span class="nav-icon">⌁</span>Salvar no navegador</button>
+      <div class="sidebar-note">Todos os indicadores são calculados a partir de uma única base. O painel não exige edição de código.</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:10px;min-width:0">
+        <button class="btn ghost mobile-menu" onclick="toggleSidebar()">☰</button>
+        <div class="top-title">
+          <h1 id="topTitle">Serene — Painel Executivo do Projeto</h1>
+          <p id="topSubtitle">Portfólio, cronograma, riscos, operação e go-to-market em uma única base editável.</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="btn desktop-only" onclick="window.print()">Imprimir</button>
+        <button class="btn desktop-only" onclick="exportJSON()">Exportar JSON</button>
+        <button class="btn dark" onclick="downloadHTML()">Baixar versão atualizada</button>
+        <button class="btn primary" onclick="openEditor('roadmap',-1)">+ Novo item</button>
+      </div>
+    </header>
+
+    <div class="content">
+      <section class="view" id="view-overview">
+        <div class="page-head">
+          <div><h2>Visão executiva</h2><p>Leitura automática do estado do projeto, com foco em prontidão, prazos, bloqueios e decisões imediatas.</p></div>
+          <div class="date-chip">Data-base: <strong id="reportDateLabel">13/07/2026</strong></div>
+        </div>
+        <div class="grid kpis" id="kpiGrid">
+    <div class="card metric-card readiness-card">
+      <div class="gauge" style="background:conic-gradient(var(--brand) 256deg,#2a3d30 256deg)">
+        <div class="gauge-inner">71<small>%</small></div>
+      </div>
+      <div><div class="metric-label">Índice de prontidão</div><div class="metric-value">Atenção</div><div class="metric-sub">Combina progresso, bloqueios, prazos e riscos. <span class="pill warn">Atenção</span></div></div>
+    </div>
+    <div class="card metric-card"><div class="metric-label">Progresso ponderado</div><div class="metric-value">71%</div><div class="metric-sub">Peso maior para itens críticos</div><div style="margin-top:10px"><span class="pill info">Informativo</span></div></div>
+    <div class="card metric-card"><div class="metric-label">Bloqueios</div><div class="metric-value">1</div><div class="metric-sub">Itens impedidos de avançar</div><div style="margin-top:10px"><span class="pill risk">Crítico</span></div></div>
+    <div class="card metric-card"><div class="metric-label">Atrasados</div><div class="metric-value">4</div><div class="metric-sub">Não concluídos após o prazo</div><div style="margin-top:10px"><span class="pill risk">Crítico</span></div></div>
+    <div class="card metric-card"><div class="metric-label">Próximos 7 dias</div><div class="metric-value">5</div><div class="metric-sub">Entregas dentro da janela</div><div style="margin-top:10px"><span class="pill warn">Atenção</span></div></div>
+    <div class="card metric-card"><div class="metric-label">Concluídos</div><div class="metric-value">5/19</div><div class="metric-sub">Itens finalizados no portfólio</div><div style="margin-top:10px"><span class="pill ok">Saudável</span></div></div>
+  </div>
+        <div class="grid two section-gap">
+          <div class="card">
+            <div class="card-title"><div><h3>Prioridades automáticas</h3><p>Geradas por criticidade, atraso, bloqueio e proximidade do prazo.</p></div><span class="pill info" id="attentionCount">7 prioridade(s)</span></div>
+            <div class="attention-list" id="attentionList">
+    <div class="attention-item critical clickable" onclick="openEditor('roadmap',6)">
+      <span class="attention-dot"></span><div><strong>Integração Stripe</strong><p>Bloqueado: Conta Stripe e documentação de produção</p></div><span class="pill risk">Bloqueado</span>
+    </div>
+    <div class="attention-item critical clickable" onclick="openEditor('roadmap',14)">
+      <span class="attention-dot"></span><div><strong>Registro de software e marca</strong><p>Prazo vencido há 3 dia(s).</p></div><span class="pill warn">Em andamento</span>
+    </div>
+    <div class="attention-item critical clickable" onclick="openEditor('roadmap',15)">
+      <span class="attention-dot"></span><div><strong>E-mails transacionais da ferramenta</strong><p>Prazo vencido há 3 dia(s).</p></div><span class="pill warn">Em andamento</span>
+    </div>
+    <div class="attention-item critical clickable" onclick="openEditor('roadmap',16)">
+      <span class="attention-dot"></span><div><strong>Modais da ferramenta</strong><p>Prazo vencido há 3 dia(s).</p></div><span class="pill warn">Em andamento</span>
+    </div>
+    <div class="attention-item critical clickable" onclick="openEditor('roadmap',0)">
+      <span class="attention-dot"></span><div><strong>Mobilização e desbloqueios Baldussi</strong><p>Prazo vencido há 17 dia(s).</p></div><span class="pill warn">Em andamento</span>
+    </div>
+    <div class="attention-item critical clickable" onclick="openEditor('risks',0)">
+      <span class="attention-dot"></span><div><strong>Stripe depende da conta bancária</strong><p>Risco 25/25 · Resolver banco como prioridade executiva. Sem banco, Stripe fica bloqueado; sem Stripe, cobrança, trial ending e upgrade não fecham.</p></div><span class="pill neutral">Aberto</span>
+    </div>
+    <div class="attention-item critical clickable" onclick="openEditor('risks',3)">
+      <span class="attention-dot"></span><div><strong>Teams/Zoom destravam ICP corporativo</strong><p>Risco 20/25 · Tratar Teams primeiro como prova técnica com aceite claro; comunicar ao GTM que base instalada deve iniciar por Meet ou por piloto controlado.</p></div><span class="pill neutral">Aberto</span>
+    </div></div>
+          </div>
+          <div class="card">
+            <div class="card-title"><div><h3>Avanço por área</h3><p>Média ponderada pela criticidade.</p></div></div>
+            <div class="area-list" id="areaProgress"><div class="area-row"><strong>Administrativo</strong><div class="progress"><span style="width:88%;background:#d8a323"></span></div><span>88%</span></div><div class="area-row"><strong>Jurídico</strong><div class="progress"><span style="width:80%;background:#75599c"></span></div><span>80%</span></div><div class="area-row"><strong>Marketing</strong><div class="progress"><span style="width:75%;background:#3f708f"></span></div><span>75%</span></div><div class="area-row"><strong>Produto</strong><div class="progress"><span style="width:72%;background:#459456"></span></div><span>72%</span></div><div class="area-row"><strong>Infraestrutura</strong><div class="progress"><span style="width:50%;background:#2f6670"></span></div><span>50%</span></div><div class="area-row"><strong>Testes</strong><div class="progress"><span style="width:50%;background:#805c9f"></span></div><span>50%</span></div></div>
+          </div>
+        </div>
+        <div class="grid three section-gap">
+          <div class="card">
+            <div class="card-title"><div><h3>Distribuição do fluxo</h3><p>Composição do portfólio por status.</p></div></div>
+            <div id="statusDistribution"><div class="status-strip"><span title="Bloqueado: 1" style="width:5.263157894736842%;background:#c84c42"></span><span title="Em andamento: 9" style="width:47.368421052631575%;background:#d8a323"></span><span title="Próximo: 2" style="width:10.526315789473683%;background:#d78232"></span><span title="Pendente: 2" style="width:10.526315789473683%;background:#9a9187"></span><span title="Concluído: 5" style="width:26.31578947368421%;background:#459456"></span></div><div class="legend"><div class="legend-item"><span><i class="dot" style="background:#c84c42"></i>Bloqueado</span><strong>1</strong></div><div class="legend-item"><span><i class="dot" style="background:#d8a323"></i>Em andamento</span><strong>9</strong></div><div class="legend-item"><span><i class="dot" style="background:#d78232"></i>Próximo</span><strong>2</strong></div><div class="legend-item"><span><i class="dot" style="background:#9a9187"></i>Pendente</span><strong>2</strong></div><div class="legend-item"><span><i class="dot" style="background:#459456"></i>Concluído</span><strong>5</strong></div></div></div>
+          </div>
+          <div class="card">
+            <div class="card-title"><div><h3>Próximos marcos</h3><p>Entregas e decisões mais próximas da data-base.</p></div></div>
+            <div class="milestone-list" id="nextMilestones"><div class="milestone clickable" onclick="openEditor('decisions',1)"><div class="milestone-date">Até 12/07</div><div><strong>Validar abordagem técnica do Teams</strong><p>Define se ICP base instalada pode avançar com narrativa multi-plataforma.</p></div></div><div class="milestone clickable" onclick="openEditor('roadmap',9)"><div class="milestone-date">10/07</div><div><strong>Registro de software e marca</strong><p>Em andamento</p></div></div><div class="milestone clickable" onclick="openEditor('roadmap',10)"><div class="milestone-date">10/07</div><div><strong>E-mails transacionais da ferramenta</strong><p>Em andamento</p></div></div><div class="milestone clickable" onclick="openEditor('roadmap',11)"><div class="milestone-date">10/07</div><div><strong>Modais da ferramenta</strong><p>Em andamento</p></div></div><div class="milestone clickable" onclick="openEditor('decisions',0)"><div class="milestone-date">09-10/07</div><div><strong>Fechar e-mails transacionais e modais</strong><p>Sem isso, onboarding, trial e monetização perdem força.</p></div></div></div>
+          </div>
+          <div class="card">
+            <div class="card-title"><div><h3>Leitura inteligente</h3><p>Síntese gerada a partir da base atual.</p></div></div>
+            <div class="insight" id="smartInsight"><h3>O gargalo é desbloqueio, não volume de execução</h3><p>Existem 1 item(ns) bloqueado(s). O mais crítico é “Integração Stripe”. Acelerar novas frentes antes de resolver a dependência tende a aumentar trabalho parado.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-portfolio">
+        <div class="page-head">
+          <div><h2>Portfólio do projeto</h2><p>Uma única tabela para consultar, filtrar e editar todas as entregas. Clique em uma linha para alterar.</p></div>
+          <div class="date-chip"><strong id="portfolioCount">19</strong>&nbsp;itens</div>
+        </div>
+        <div class="toolbar">
+          <input id="taskSearch" type="search" placeholder="Buscar por entrega, dependência, owner ou ID..." oninput="renderPortfolio()">
+          <select id="filterArea" onchange="renderPortfolio()"><option value="">Todas as áreas</option><option>Administrativo</option><option>Infraestrutura</option><option>Jurídico</option><option>Marketing</option><option>Produto</option><option>Testes</option></select>
+          <select id="filterStatus" onchange="renderPortfolio()"><option value="">Todos os status</option><option>Concluído</option><option>Em andamento</option><option>Pendente</option><option>Próximo</option></select>
+          <select id="filterCrit" onchange="renderPortfolio()"><option value="">Todas as criticidades</option><option>Alta</option><option>Baixa</option><option>Média</option></select>
+          <select id="filterSort" onchange="renderPortfolio()">
+            <option value="severity">Ordenar: prioridade</option>
+            <option value="end">Ordenar: prazo</option>
+            <option value="progress">Ordenar: progresso</option>
+            <option value="area">Ordenar: área</option>
+          </select>
+          <button class="btn" onclick="exportRoadmapCSV()">Exportar CSV</button>
+          <button class="btn primary" onclick="openEditor('roadmap',-1)">+ Adicionar</button>
+        </div>
+        <div class="table-wrap" id="portfolioTableWrap"><table><thead><tr><th>ID</th><th>Entrega</th><th>Área / owner</th><th>Status</th><th>Prazo</th><th>Progresso</th><th>Criticidade</th><th>Dependência</th><th></th></tr></thead><tbody>
+    <tr class="clickable" onclick="openEditor('roadmap',6)">
+        <td><strong>F4</strong><br><span class="pill neutral">P0</span></td>
+        <td class="name-cell"><strong>Integração Stripe</strong><span>Checkout testado e estrutura pronta para produção</span></td>
+        <td><strong>Produto</strong><br><span style="color:var(--muted)">Produto / Desenvolvimento</span></td>
+        <td><span class="pill risk">Bloqueado</span></td>
+        <td><span class="deadline ">24/07</span><br><span class="deadline " style="font-size:10px">11d restantes</span></td>
+        <td><div class="mini-progress"><div class="progress"><span style="width:50%"></span></div><small>50%</small></div></td>
+        <td><span class="pill risk">Alta</span></td>
+        <td>Conta Stripe e documentação de produção</td>
+        <td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',6)">Editar</button></td>
+      </tr><tr class="clickable" onclick="openEditor('roadmap',0)">
+        <td><strong>F0</strong><br><span class="pill neutral">P2</span></td>
+        <td class="name-cell"><strong>Mobilização e desbloqueios Baldussi</strong><span>Ambiente e decisões mínimas disponíveis</span></td>
+        <td><strong>Administrativo</strong><br><span style="color:var(--muted)">Administrativo / Financeiro</span></td>
+        <td><span class="pill warn">Em andamento</span></td>
+        <td><span class="deadline overdue">26/06</span><br><span class="deadline overdue" style="font-size:10px">17d em atraso</span></td>
+        <td><div class="mini-progress"><div class="progress"><span style="width:95%"></span></div><small>95%</small></div></td>
+        <td><span class="pill neutral">Baixa</span></td>
+        <td>Interface V1, regras dos planos, Stripe, Amazon e contas de e-mail</td>
+        <td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',0)">Editar</button></td>
+      </tr><tr class="clickable" onclick="openEditor('roadmap',14)">
+        <td><strong>ADM5</strong><br><span class="pill neutral">P0</span></td>
+        <td class="name-cell"><strong>Registro de software e marca</strong><span>Protocolo de registro iniciado</span></td>
+        <td><strong>Jurídico</strong><br><span style="color:var(--muted)">Jurídico</span></td>
+        <td><span class="pill warn">Em andamento</span></td>
+        <td><span class="deadline overdue">10/07</span><br><span class="deadline overdue" style="font-size:10px">3d em atraso</span></td>
+        <td><div class="mini-progress"><div class="progress"><span style="width:80%"></span></div><small>80%</small></div></td>
+        <td><span class="pill risk">Alta</span></td>
+        <td>Contrato social</td>
+        <td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',14)">Editar</button></td>
+      </tr><tr class="clickable" onclick="openEditor('roadmap',15)">
+        <td><strong>MKT1</strong><br><span class="pill neutral">P0</span></td>
+        <td class="name-cell"><strong>E-mails transacionais da ferramenta</strong><span>E-mails de onboarding, pós-reunião, trial e limite ativos</span></td>
+        <td><strong>Marketing</strong><br><span style="color:var(--muted)">Marketing</span></td>
+        <td><span class="pill warn">Em andamento</span></td>
+        <td><span class="deadline overdue">10/07</span><br><span class="deadline overdue" style="font-size:10px">3d em atraso</span></td>
+        <td><div class="mini-progress"><div class="progress"><span style="width:80%"></span></div><small>80%</small></div></td>
+        <td><span class="pill risk">Alta</span></td>
+        <td>Templates finais, eventos de produto e SMTP</td>
+        <td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',15)">Editar</button></td>
+      </tr><tr class="clickable" onclick="openEditor('roadmap',16)">
+        <td><strong>MKT2</strong><br><span class="pill neutral">P0</span></td>
+        <td class="name-cell"><strong>Modais da ferramenta</strong><span>Modais ativos para ativação, limite, upgrade e aviso</span></td>
+        <td><strong>Marketing</strong><br><span style="color:var(--muted)">Marketing</span></td>
+        <td><span class="pill warn">Em andamento</span></td>
+        <td><span class="deadline overdue">10/07</span><br><span class="deadline overdue" style="font-size:10px">3d em atraso</span></td>
+        <td><div class="mini-progress"><div class="progress"><span style="width:70%"></span></div><small>70%</small></div></td>
+        <td><span class="pill risk">Alta</span></td>
+        <td>Copy, gatilhos de uso e estados de plano</td>
+        <td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',16)">Editar</button></td>
+      </tr><tr class="clickable" onclick="openEditor('roadmap',1)">
+        <td><strong>F1</strong><br><span class="pill neutral">P0</span></td>
+        <td class="name-cell"><strong>Novo layout + landing page + refactor interno</strong><span>Fluxos principais preservados e nova UI aplicada</span></td>
+        <td><strong>Produto</strong><br><span style="color:var(--muted)">Produto / Desenvolvimento</span></td>
+        <td><span class="pill ok">Concluído</span></td>
+        <td><span class="deadline ">05/07</span><br><span class="deadline " style="font-size:10px">Concluído</span></td>
+        <td><div class="mini-progress"><div class="progress"><span style="width:100%"></span></div><small>100%</small></div></td>
+        <td><span class="pill risk">Alta</span></td>
+        <td>Definição final da interface V1</td>
+        <td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',1)">Editar</button></td>
+      </tr><tr class="clickable" onclick="openEditor('roadmap',2)">
+        <td><strong>F7</strong><br><span class="pill neutral">P0</span></td>
+        <td class="name-cell"><strong>Testes Amazon S3/ECS</strong><span>Relatório técnico de custo, viabilidade e riscos</span></td>
+        <td><strong>Infraestrutura</strong><br><span style="color:var(--muted)">Infraestrutura</span></td>
+        <td><span class="pill ok">Concluído</span></td>
+        <td><span class="deadline ">10/07</span><br><span class="deadline " style="font-size:10px">Concluído</span></td>
+        <td><div class="mini-progress"><div class="progress"><span style="width:100%"></span></div><small>100%</small></div></td>
+        <td><span class="pill risk">Alta</span></td>
+        <td>Acessos Amazon</td>
+        <td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',2)">Editar</button></td>
+      </tr><tr class="clickable" onclick="openEditor('roadmap',11)">
+        <td><strong>ADM2</strong><br><span class="pill neutral">P0</span></td>
+        <td class="name-cell"><strong>Conta bancária</strong><span>Conta ativa para recebimento e Stripe</span></td>
+        <td><strong>Administrativo</strong><br><span style="color:var(--muted)">Administrativo / Financeiro</span></td>
+        <td><span class="pill ok">Concluído</span></td>
+        <td><span class="deadline ">10/07</span><br><span class="deadline " style="font-size:10px">Concluído</span></td>
+        <td><div class="mini-progress"><div class="progress"><span style="width:100%"></span></div><small>100%</small></div></td>
+        <td><span class="pill risk">Alta</span></td>
+        <td>Contrato social / abertura bancária</td>
+        <td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',11)">Editar</button></td>
+      </tr><tr class="clickable" onclick="openEditor('roadmap',3)">
+        <td><strong>F2</strong><br><span class="pill neutral">P0</span></td>
+        <td class="name-cell"><strong>Integração com  Zoom e Microsoft Teams</strong><span>Decisão técnica registrada e caminho de integração definido</span></td>
+        <td><strong>Produto</strong><br><span style="color:var(--muted)">Produto / Desenvolvimento</span></td>
+        <td><span class="pill warn">Em andamento</span></td>
+        <td><span class="deadline soon">17/07</span><br><span class="deadline soon" style="font-size:10px">Vence em 4d</span></td>
+        <td><div class="mini-progress"><div class="progress"><span style="width:70%"></span></div><small>70%</small></div></td>
+        <td><span class="pill risk">Alta</span></td>
+        <td>Validação da abordagem de bot web</td>
+        <td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',3)">Editar</button></td>
+      </tr><tr class="clickable" onclick="openEditor('roadmap',12)">
+        <td><strong>ADM3</strong><br><span class="pill neutral">P0</span></td>
+        <td class="name-cell"><strong>Stripe</strong><span>Conta confirmada e apta a produção</span></td>
+        <td><strong>Administrativo</strong><br><span style="color:var(--muted)">Administrativo / Financeiro</span></td>
+        <td><span class="pill warn">Próximo</span></td>
+        <td><span class="deadline soon">17/07</span><br><span class="deadline soon" style="font-size:10px">Vence em 4d</span></td>
+        <td><div class="mini-progress"><div class="progress"><span style="width:65%"></span></div><small>65%</small></div></td>
+        <td><span class="pill risk">Alta</span></td>
+        <td>Conta bancária aprovada</td>
+        <td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',12)">Editar</button></td>
+      </tr><tr class="clickable" onclick="openEditor('roadmap',17)">
+        <td><strong>TST1</strong><br><span class="pill neutral">P0</span></td>
+        <td class="name-cell"><strong>Testes internos</strong><span>Lista de bugs e validações internas fechadas</span></td>
+        <td><strong>Testes</strong><br><span style="color:var(--muted)">Produto / QA</span></td>
+        <td><span class="pill warn">Em andamento</span></td>
+        <td><span class="deadline soon">17/07</span><br><span class="deadline soon" style="font-size:10px">Vence em 4d</span></td>
+        <td><div class="mini-progress"><div class="progress"><span style="width:100%"></span></div><small>100%</small></div></td>
+        <td><span class="pill risk">Alta</span></td>
+        <td>Ambiente estável e critérios de aceite</td>
+        <td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',17)">Editar</button></td>
+      </tr><tr class="clickable" onclick="openEditor('roadmap',5)">
+        <td><strong>F3</strong><br><span class="pill neutral">P0</span></td>
+        <td class="name-cell"><strong>Sistema de planos parametrizáveis</strong><span>Planos aplicando limites de uso conforme configuração</span></td>
+        <td><strong>Produto</strong><br><span style="color:var(--muted)">Produto / Desenvolvimento</span></td>
+        <td><span class="pill ok">Concluído</span></td>
+        <td><span class="deadline ">19/07</span><br><span class="deadline " style="font-size:10px">Concluído</span></td>
+        <td><div class="mini-progress"><div class="progress"><span style="width:100%"></span></div><small>100%</small></div></td>
+        <td><span class="pill risk">Alta</span></td>
+        <td>Regras de negócio e modalidades fechadas</td>
+        <td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',5)">Editar</button></td>
+      </tr><tr class="clickable" onclick="openEditor('roadmap',18)">
+        <td><strong>TST3</strong><br><span class="pill neutral">P0</span></td>
+        <td class="name-cell"><strong>Execução dos testes externos</strong><span>Feedback real consolidado por perfil de cliente</span></td>
+        <td><strong>Testes</strong><br><span style="color:var(--muted)">Produto / QA</span></td>
+        <td><span class="pill neutral">Pendente</span></td>
+        <td><span class="deadline ">26/07</span><br><span class="deadline " style="font-size:10px">13d restantes</span></td>
+        <td><div class="mini-progress"><div class="progress"><span style="width:0%"></span></div><small>0%</small></div></td>
+        <td><span class="pill risk">Alta</span></td>
+        <td>Clientes definidos e fluxos críticos estabilizados</td>
+        <td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',18)">Editar</button></td>
+      </tr><tr class="clickable" onclick="openEditor('roadmap',9)">
+        <td><strong>F8</strong><br><span class="pill neutral">P0</span></td>
+        <td class="name-cell"><strong>Stress test 100 reuniões simultâneas</strong><span>Limites da estrutura documentados e gargalos mapeados</span></td>
+        <td><strong>Infraestrutura</strong><br><span style="color:var(--muted)">Infraestrutura</span></td>
+        <td><span class="pill neutral">Pendente</span></td>
+        <td><span class="deadline ">17/08</span><br><span class="deadline " style="font-size:10px">35d restantes</span></td>
+        <td><div class="mini-progress"><div class="progress"><span style="width:0%"></span></div><small>0%</small></div></td>
+        <td><span class="pill risk">Alta</span></td>
+        <td>Contas de e-mail para rotação dos bots e infraestrutura estável</td>
+        <td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',9)">Editar</button></td>
+      </tr><tr class="clickable" onclick="openEditor('roadmap',4)">
+        <td><strong>F9</strong><br><span class="pill neutral">P1</span></td>
+        <td class="name-cell"><strong>Teste mobile web</strong><span>Gravação rodando bem em segundo plano no mobile</span></td>
+        <td><strong>Produto</strong><br><span style="color:var(--muted)">Produto / Desenvolvimento</span></td>
+        <td><span class="pill warn">Próximo</span></td>
+        <td><span class="deadline soon">17/07</span><br><span class="deadline soon" style="font-size:10px">Vence em 4d</span></td>
+        <td><div class="mini-progress"><div class="progress"><span style="width:0%"></span></div><small>0%</small></div></td>
+        <td><span class="pill warn">Média</span></td>
+        <td>Serene estável</td>
+        <td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',4)">Editar</button></td>
+      </tr><tr class="clickable" onclick="openEditor('roadmap',10)">
+        <td><strong>ADM1</strong><br><span class="pill neutral">P1</span></td>
+        <td class="name-cell"><strong>Definição de ferramenta de ERP</strong><span>ERP definido para controle financeiro e administrativo</span></td>
+        <td><strong>Administrativo</strong><br><span style="color:var(--muted)">Administrativo / Financeiro</span></td>
+        <td><span class="pill warn">Em andamento</span></td>
+        <td><span class="deadline soon">17/07</span><br><span class="deadline soon" style="font-size:10px">Vence em 4d</span></td>
+        <td><div class="mini-progress"><div class="progress"><span style="width:90%"></span></div><small>90%</small></div></td>
+        <td><span class="pill warn">Média</span></td>
+        <td>Escolha de processo financeiro/operacional</td>
+        <td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',10)">Editar</button></td>
+      </tr><tr class="clickable" onclick="openEditor('roadmap',13)">
+        <td><strong>ADM4</strong><br><span class="pill neutral">P1</span></td>
+        <td class="name-cell"><strong>Código de parceiro no Stripe / comissionamento</strong><span>Fluxo de parceiro documentado</span></td>
+        <td><strong>Administrativo</strong><br><span style="color:var(--muted)">Administrativo / Financeiro</span></td>
+        <td><span class="pill ok">Concluído</span></td>
+        <td><span class="deadline ">17/07</span><br><span class="deadline " style="font-size:10px">Concluído</span></td>
+        <td><div class="mini-progress"><div class="progress"><span style="width:100%"></span></div><small>100%</small></div></td>
+        <td><span class="pill warn">Média</span></td>
+        <td>Definição comercial; alternativa por cupom e comissionamento manual</td>
+        <td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',13)">Editar</button></td>
+      </tr><tr class="clickable" onclick="openEditor('roadmap',7)">
+        <td><strong>F5</strong><br><span class="pill neutral">P1</span></td>
+        <td class="name-cell"><strong>Submissão GCP e extensão</strong><span>Submissões realizadas e pendências documentadas</span></td>
+        <td><strong>Produto</strong><br><span style="color:var(--muted)">Produto / Desenvolvimento</span></td>
+        <td><span class="pill warn">Em andamento</span></td>
+        <td><span class="deadline ">02/08</span><br><span class="deadline " style="font-size:10px">20d restantes</span></td>
+        <td><div class="mini-progress"><div class="progress"><span style="width:90%"></span></div><small>90%</small></div></td>
+        <td><span class="pill warn">Média</span></td>
+        <td>Requisitos de publicação e contas aprovadas</td>
+        <td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',7)">Editar</button></td>
+      </tr><tr class="clickable" onclick="openEditor('roadmap',8)">
+        <td><strong>F6</strong><br><span class="pill neutral">P1</span></td>
+        <td class="name-cell"><strong>Serene Desktop</strong><span>Gravação de tela/janela sincronizada ao servidor</span></td>
+        <td><strong>Produto</strong><br><span style="color:var(--muted)">Produto / Desenvolvimento</span></td>
+        <td><span class="pill warn">Em andamento</span></td>
+        <td><span class="deadline ">02/08</span><br><span class="deadline " style="font-size:10px">20d restantes</span></td>
+        <td><div class="mini-progress"><div class="progress"><span style="width:75%"></span></div><small>75%</small></div></td>
+        <td><span class="pill warn">Média</span></td>
+        <td>Comportamento de gravação e sincronização</td>
+        <td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',8)">Editar</button></td>
+      </tr></tbody></table></div>
+      </section>
+
+      <section class="view active" id="view-timeline">
+        <div class="page-head">
+          <div><h2>Cronograma visual</h2><p>Linha do tempo calculada automaticamente pelas datas das entregas. O progresso aparece dentro de cada barra.</p></div>
+          <div class="date-chip" id="timelineRange">22/06/2026 — 02/08/2026</div>
+        </div>
+        <div class="toolbar">
+          <select id="timelineArea" onchange="renderTimeline()"><option value="">Todas as áreas</option><option>Administrativo</option><option>Infraestrutura</option><option>Jurídico</option><option>Marketing</option><option selected="">Produto</option><option>Testes</option></select>
+          <select id="timelineStatus" onchange="renderTimeline()"><option value="">Todos os status</option><option>Concluído</option><option>Em andamento</option><option>Pendente</option><option>Próximo</option></select>
+          <button class="btn" onclick="setView('portfolio')">Editar datas no portfólio</button>
+        </div>
+        <div class="timeline-shell" id="timelineShell"><div class="timeline-head"><div class="timeline-label"><strong>Entrega</strong><span>7 item(ns)</span></div><div class="week-heads" style="grid-template-columns:repeat(6,minmax(100px,1fr))"><div class="week-head">S1<br>22/06</div><div class="week-head">S2<br>29/06</div><div class="week-head">S3<br>06/07</div><div class="week-head">S4<br>13/07</div><div class="week-head">S5<br>20/07</div><div class="week-head">S6<br>27/07</div></div></div><div class="timeline-row clickable" onclick="openEditor('roadmap',1)">
+      <div class="timeline-label"><strong>F1 · Novo layout + landing page + refactor interno</strong><span>Produto · Concluído</span></div>
+      <div class="timeline-track" style="--week-width:calc(100% / 6)">
+        <div class="timeline-bar" title="Novo layout + landing page + refactor interno" style="left:11.904761904761903%;width:21.428571428571427%;background:#459456;--task-progress:100%"><span>27/06–05/07 · 100%</span></div>
+      </div>
+    </div><div class="timeline-row clickable" onclick="openEditor('roadmap',3)">
+      <div class="timeline-label"><strong>F2 · Integração com  Zoom e Microsoft Teams</strong><span>Produto · Em andamento</span></div>
+      <div class="timeline-track" style="--week-width:calc(100% / 6)">
+        <div class="timeline-bar" title="Integração com  Zoom e Microsoft Teams" style="left:33.33333333333333%;width:28.57142857142857%;background:#459456;--task-progress:70%"><span>06/07–17/07 · 70%</span></div>
+      </div>
+    </div><div class="timeline-row clickable" onclick="openEditor('roadmap',4)">
+      <div class="timeline-label"><strong>F9 · Teste mobile web</strong><span>Produto · Próximo</span></div>
+      <div class="timeline-track" style="--week-width:calc(100% / 6)">
+        <div class="timeline-bar" title="Teste mobile web" style="left:33.33333333333333%;width:28.57142857142857%;background:#459456;--task-progress:0%"><span>06/07–17/07 · 0%</span></div>
+      </div>
+    </div><div class="timeline-row clickable" onclick="openEditor('roadmap',5)">
+      <div class="timeline-label"><strong>F3 · Sistema de planos parametrizáveis</strong><span>Produto · Concluído</span></div>
+      <div class="timeline-track" style="--week-width:calc(100% / 6)">
+        <div class="timeline-bar" title="Sistema de planos parametrizáveis" style="left:47.61904761904761%;width:19.047619047619047%;background:#459456;--task-progress:100%"><span>12/07–19/07 · 100%</span></div>
+      </div>
+    </div><div class="timeline-row clickable" onclick="openEditor('roadmap',6)">
+      <div class="timeline-label"><strong>F4 · Integração Stripe</strong><span>Produto · Em andamento</span></div>
+      <div class="timeline-track" style="--week-width:calc(100% / 6)">
+        <div class="timeline-bar" title="Integração Stripe" style="left:66.66666666666666%;width:11.904761904761903%;background:#459456;--task-progress:65%"><span>20/07–24/07 · 65%</span></div>
+      </div>
+    </div><div class="timeline-row clickable" onclick="openEditor('roadmap',7)">
+      <div class="timeline-label"><strong>F5 · Submissão GCP e extensão</strong><span>Produto · Em andamento</span></div>
+      <div class="timeline-track" style="--week-width:calc(100% / 6)">
+        <div class="timeline-bar" title="Submissão GCP e extensão" style="left:83.33333333333334%;width:16.666666666666657%;background:#459456;--task-progress:90%"><span>27/07–02/08 · 90%</span></div>
+      </div>
+    </div><div class="timeline-row clickable" onclick="openEditor('roadmap',8)">
+      <div class="timeline-label"><strong>F6 · Serene Desktop</strong><span>Produto · Em andamento</span></div>
+      <div class="timeline-track" style="--week-width:calc(100% / 6)">
+        <div class="timeline-bar" title="Serene Desktop" style="left:83.33333333333334%;width:16.666666666666657%;background:#459456;--task-progress:75%"><span>27/07–02/08 · 75%</span></div>
+      </div>
+    </div></div>
+      </section>
+
+      <section class="view" id="view-risks">
+        <div class="page-head">
+          <div><h2>Riscos e mitigação</h2><p>Matriz 5×5, priorização por score e ações de resposta. Clique em um risco para editar.</p></div>
+          <button class="btn primary" onclick="openEditor('risks',-1)">+ Novo risco</button>
+        </div>
+        <div class="risk-layout">
+          <div class="card">
+            <div class="card-title"><div><h3>Matriz probabilidade × impacto</h3><p>O quadrante vermelho exige ação executiva.</p></div></div>
+            <div class="risk-matrix-wrap"><div class="risk-matrix" id="riskMatrix"><div class="risk-axis-y">5</div><div class="risk-cell low"></div><div class="risk-cell med"></div><div class="risk-cell med"></div><div class="risk-cell high"><button class="risk-token" title="Teams/Zoom destravam ICP corporativo" onclick="openEditor('risks',3)">R4</button></div><div class="risk-cell high"><button class="risk-token" title="Stripe depende da conta bancária" onclick="openEditor('risks',0)">R1</button></div><div class="risk-axis-y">4</div><div class="risk-cell low"></div><div class="risk-cell med"></div><div class="risk-cell med"><button class="risk-token" title="Teste externo antes da estabilização cria ruído comercial" onclick="openEditor('risks',4)">R5</button><button class="risk-token" title="Stress test pode mapear limite, não garantir escala" onclick="openEditor('risks',5)">R6</button></div><div class="risk-cell high"><button class="risk-token" title="Registro de software/marca depende do contrato social" onclick="openEditor('risks',1)">R2</button><button class="risk-token" title="Prazos de e-mails e modais em 10/07" onclick="openEditor('risks',2)">R3</button></div><div class="risk-cell high"></div><div class="risk-axis-y">3</div><div class="risk-cell low"></div><div class="risk-cell low"></div><div class="risk-cell med"></div><div class="risk-cell med"></div><div class="risk-cell med"></div><div class="risk-axis-y">2</div><div class="risk-cell low"></div><div class="risk-cell low"></div><div class="risk-cell low"></div><div class="risk-cell med"></div><div class="risk-cell med"></div><div class="risk-axis-y">1</div><div class="risk-cell low"></div><div class="risk-cell low"></div><div class="risk-cell low"></div><div class="risk-cell low"></div><div class="risk-cell low"></div><div></div><div class="risk-axis-x">1</div><div class="risk-axis-x">2</div><div class="risk-axis-x">3</div><div class="risk-axis-x">4</div><div class="risk-axis-x">5</div></div></div>
+          </div>
+          <div class="card">
+            <div class="card-title"><div><h3>Ranking de riscos</h3><p>Ordenado pelo maior score.</p></div><span class="pill risk" id="criticalRiskCount">4 crítico(s)</span></div>
+            <div class="risk-list" id="riskList">
+    <div class="risk-card clickable" onclick="openEditor('risks',0)">
+      <div><div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap"><h4>Stripe depende da conta bancária</h4><span class="pill neutral">Aberto</span></div>
+      <p>ADM/Produto · Prob. 5/5 · Impacto 5/5</p>
+      <p><strong>Mitigação:</strong> Resolver banco como prioridade executiva. Sem banco, Stripe fica bloqueado; sem Stripe, cobrança, trial ending e upgrade não fecham.</p></div>
+      <div class="risk-score">25<small style="font-size:9px;color:var(--muted)">/25</small></div>
+    </div>
+    <div class="risk-card clickable" onclick="openEditor('risks',3)">
+      <div><div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap"><h4>Teams/Zoom destravam ICP corporativo</h4><span class="pill neutral">Aberto</span></div>
+      <p>Produto/GTM · Prob. 4/5 · Impacto 5/5</p>
+      <p><strong>Mitigação:</strong> Tratar Teams primeiro como prova técnica com aceite claro; comunicar ao GTM que base instalada deve iniciar por Meet ou por piloto controlado.</p></div>
+      <div class="risk-score">20<small style="font-size:9px;color:var(--muted)">/25</small></div>
+    </div>
+    <div class="risk-card clickable" onclick="openEditor('risks',1)">
+      <div><div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap"><h4>Registro de software/marca depende do contrato social</h4><span class="pill neutral">Aberto</span></div>
+      <p>Jurídico · Prob. 4/5 · Impacto 4/5</p>
+      <p><strong>Mitigação:</strong> Separar documentação societária e iniciar preparação dos arquivos de software/hash antes do protocolo.</p></div>
+      <div class="risk-score">16<small style="font-size:9px;color:var(--muted)">/25</small></div>
+    </div>
+    <div class="risk-card clickable" onclick="openEditor('risks',2)">
+      <div><div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap"><h4>Prazos de e-mails e modais em 10/07</h4><span class="pill neutral">Aberto</span></div>
+      <p>Marketing/Produto · Prob. 4/5 · Impacto 4/5</p>
+      <p><strong>Mitigação:</strong> Cortar escopo para transacionais essenciais: boas-vindas, resumo pronto, trial ending, limite de plano e erro de processamento.</p></div>
+      <div class="risk-score">16<small style="font-size:9px;color:var(--muted)">/25</small></div>
+    </div>
+    <div class="risk-card clickable" onclick="openEditor('risks',4)">
+      <div><div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap"><h4>Teste externo antes da estabilização cria ruído comercial</h4><span class="pill neutral">Aberto</span></div>
+      <p>Testes/GTM · Prob. 3/5 · Impacto 4/5</p>
+      <p><strong>Mitigação:</strong> Definir clientes tolerantes a beta, escopo de teste, roteiro de feedback e termo de expectativa.</p></div>
+      <div class="risk-score">12<small style="font-size:9px;color:var(--muted)">/25</small></div>
+    </div>
+    <div class="risk-card clickable" onclick="openEditor('risks',5)">
+      <div><div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap"><h4>Stress test pode mapear limite, não garantir escala</h4><span class="pill neutral">Aberto</span></div>
+      <p>Infraestrutura · Prob. 3/5 · Impacto 4/5</p>
+      <p><strong>Mitigação:</strong> Comunicar internamente que o teste entrega diagnóstico técnico; decisão de escala exige plano de infraestrutura após o resultado.</p></div>
+      <div class="risk-score">12<small style="font-size:9px;color:var(--muted)">/25</small></div>
+    </div></div>
+          </div>
+        </div>
+        <div class="card section-gap">
+          <div class="card-title"><div><h3>Plano de mitigação</h3><p>Ações registradas na base do projeto.</p></div><button class="btn small" onclick="openEditor('mitigationPlan',-1)">+ Ação</button></div>
+          <div class="table-wrap" id="mitigationTableWrap"><table><thead><tr><th>#</th><th>Frente</th><th>Responsável</th><th>Ação</th><th></th></tr></thead><tbody><tr class="clickable" onclick="openEditor('mitigationPlan',0)"><td>1</td><td><strong>Banco / Stripe</strong></td><td>Owner financeiro + gestor do projeto</td><td>Fechar conta bancária e checklist de produção do Stripe.</td><td><button class="btn small" onclick="event.stopPropagation();openEditor('mitigationPlan',0)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('mitigationPlan',1)"><td>2</td><td><strong>Marketing 10/07</strong></td><td>Produto + Marketing</td><td>Publicar versão mínima dos e-mails e modais críticos.</td><td><button class="btn small" onclick="event.stopPropagation();openEditor('mitigationPlan',1)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('mitigationPlan',2)"><td>3</td><td><strong>Teams</strong></td><td>Produto / Dev</td><td>Registrar decisão técnica: viável, inviável ou dependente de alternativa.</td><td><button class="btn small" onclick="event.stopPropagation();openEditor('mitigationPlan',2)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('mitigationPlan',3)"><td>4</td><td><strong>Testes externos</strong></td><td>CS / Produto</td><td>Definir clientes, escopo, critérios de sucesso e roteiro de coleta.</td><td><button class="btn small" onclick="event.stopPropagation();openEditor('mitigationPlan',3)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('mitigationPlan',4)"><td>5</td><td><strong>Jurídico</strong></td><td>Sócios / Jurídico</td><td>Separar contrato social e preparar documentação de registro.</td><td><button class="btn small" onclick="event.stopPropagation();openEditor('mitigationPlan',4)">Editar</button></td></tr></tbody></table></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-gtm">
+        <div class="page-head">
+          <div><h2>GTM &amp; Operação</h2><p>Prioridades comerciais, mensagens estratégicas e leitura das frentes administrativas e de lançamento.</p></div>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <div class="card-title"><div><h3>Ranking de ICPs</h3><p>Score, onda, decisor e argumento central.</p></div><button class="btn small" onclick="openEditor('icps',-1)">+ ICP</button></div>
+            <div class="rank-list" id="icpList"><div class="rank-card clickable" onclick="openEditor('icps',0)"><div class="rank-number">1</div><div><strong>Vendas B2B consultivas</strong><p>Onda 1 · Decisor: Head de Vendas / CRO</p><p>Monitoria de 100% das reuniões</p></div><div class="rank-score">95</div></div><div class="rank-card clickable" onclick="openEditor('icps',1)"><div class="rank-number">2</div><div><strong>Customer Success</strong><p>Onda 1 · Decisor: Head de CS</p><p>Sinais de risco nas conversas</p></div><div class="rank-score">90</div></div><div class="rank-card clickable" onclick="openEditor('icps',2)"><div class="rank-number">3</div><div><strong>Consultorias e agências</strong><p>Onda 1 · Decisor: Sócio / COO</p><p>Registro auditável sem esforço</p></div><div class="rank-score">88</div></div><div class="rank-card clickable" onclick="openEditor('icps',3)"><div class="rank-number">4</div><div><strong>Base instalada de telefonia</strong><p>Cross-sell · Decisor: Operações / Qualidade</p><p>Fornecedor já homologado + avaliação de 100% das interações</p></div><div class="rank-score">92</div></div><div class="rank-card clickable" onclick="openEditor('icps',4)"><div class="rank-number">5</div><div><strong>Seguros / fintechs</strong><p>Onda 2 · Decisor: Comercial + compliance</p><p>Evidência e compliance em 100% das interações</p></div><div class="rank-score">82</div></div></div>
+          </div>
+          <div class="card">
+            <div class="card-title"><div><h3>Estado operacional</h3><p>Derivado das entregas administrativas, jurídicas e de testes.</p></div></div>
+            <div class="attention-list" id="opsState"><div class="attention-item critical clickable" onclick="openEditor('roadmap',0)"><span class="attention-dot"></span><div><strong>Mobilização e desbloqueios Baldussi</strong><p>Administrativo · 17 dia(s) em atraso.</p></div><span class="pill warn">Em andamento</span></div><div class="attention-item critical clickable" onclick="openEditor('roadmap',14)"><span class="attention-dot"></span><div><strong>Registro de software e marca</strong><p>Jurídico · 3 dia(s) em atraso.</p></div><span class="pill warn">Em andamento</span></div><div class="attention-item critical clickable" onclick="openEditor('roadmap',15)"><span class="attention-dot"></span><div><strong>E-mails transacionais da ferramenta</strong><p>Marketing · 3 dia(s) em atraso.</p></div><span class="pill warn">Em andamento</span></div><div class="attention-item critical clickable" onclick="openEditor('roadmap',16)"><span class="attention-dot"></span><div><strong>Modais da ferramenta</strong><p>Marketing · 3 dia(s) em atraso.</p></div><span class="pill warn">Em andamento</span></div><div class="attention-item  clickable" onclick="openEditor('roadmap',2)"><span class="attention-dot"></span><div><strong>Testes Amazon S3/ECS</strong><p>Infraestrutura · 100% concluído.</p></div><span class="pill ok">Concluído</span></div><div class="attention-item  clickable" onclick="openEditor('roadmap',9)"><span class="attention-dot"></span><div><strong>Stress test 100 reuniões simultâneas</strong><p>Infraestrutura · 0% concluído.</p></div><span class="pill neutral">Pendente</span></div><div class="attention-item  clickable" onclick="openEditor('roadmap',11)"><span class="attention-dot"></span><div><strong>Conta bancária</strong><p>Administrativo · 100% concluído.</p></div><span class="pill ok">Concluído</span></div></div>
+          </div>
+        </div>
+        <div class="card section-gap">
+          <div class="card-title"><div><h3>Frentes de marketing e expansão</h3><p>Cards estratégicos editáveis.</p></div><button class="btn small" onclick="openEditor('marketingCards',-1)">+ Card</button></div>
+          <div class="card-grid" id="marketingGrid"><div class="info-card clickable" onclick="openEditor('marketingCards',0)"><h4>E-mails transacionais</h4><span class="pill warn">Prazo 10/07</span><p>Devem partir de evento real do usuário e entregar valor no inbox: resumo, decisões, tarefas, trial e limite.</p></div><div class="info-card clickable" onclick="openEditor('marketingCards',1)"><h4>Modais</h4><span class="pill warn">Prazo 10/07</span><p>Devem educar sem poluir: ativação, limite, upgrade, erro/processamento e consentimento.</p></div><div class="info-card clickable" onclick="openEditor('marketingCards',2)"><h4>Base instalada</h4><span class="pill ok">Oportunidade forte</span><p>Cross-sell via CS reduz CAC, mas depende de mapear contas e plataforma predominante.</p></div><div class="info-card clickable" onclick="openEditor('marketingCards',3)"><h4>ICP onda 1</h4><span class="pill ok">Foco imediato</span><p>Vendas B2B, CS e consultorias/agências: dor clara, decisor mais direto e aderência ao MVP.</p></div><div class="info-card clickable" onclick="openEditor('marketingCards',4)"><h4>Compliance</h4><span class="pill info">Diferencial</span><p>LGPD, dados no Brasil, hierarquia e auditabilidade sustentam mercados regulados.</p></div><div class="info-card clickable" onclick="openEditor('marketingCards',5)"><h4>Produto brasileiro</h4><span class="pill info">Mensagem-chave</span><p>Não vender IA genérica. Vender execução, evidência, monitoria e melhoria operacional.</p></div></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-governance">
+        <div class="page-head">
+          <div><h2>Governança e decisões</h2><p>Políticas operacionais, marcos decisórios e fontes de referência do dashboard.</p></div>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <div class="card-title"><div><h3>Políticas operacionais</h3><p>Regras centrais do ciclo de vida da conta.</p></div><button class="btn small" onclick="openEditor('policyItems',-1)">+ Política</button></div>
+            <div class="table-wrap" id="policyTableWrap"></div>
+          </div>
+          <div class="card">
+            <div class="card-title"><div><h3>Marcos decisórios</h3><p>Decisões e datas de referência.</p></div><button class="btn small" onclick="openEditor('decisions',-1)">+ Marco</button></div>
+            <div class="milestone-list" id="decisionList"></div>
+          </div>
+        </div>
+        <div class="card section-gap">
+          <div class="card-title"><div><h3>Fontes</h3><p>Documentos usados na construção da visão consolidada.</p></div></div>
+          <div class="source-grid" id="sourceGrid"></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-data">
+        <div class="page-head">
+          <div><h2>Dados e parâmetros</h2><p>Configure o cálculo do dashboard, revise inconsistências e gerencie a base sem tocar no código.</p></div>
+        </div>
+        <div class="settings-grid">
+          <div class="grid" style="align-content:start">
+            <div class="card form-card">
+              <div class="card-title"><div><h3>Configurações gerais</h3><p>Definem a data-base e os indicadores.</p></div></div>
+              <div class="form-grid">
+                <div class="full"><label>Título</label><input id="cfgTitle" type="text"></div>
+                <div class="full"><label>Subtítulo</label><textarea id="cfgSubtitle"></textarea></div>
+                <div><label>Data-base</label><input id="cfgReportDate" type="date"></div>
+                <div><label>Janela de prazo próximo (dias)</label><input id="cfgDueSoon" type="number" min="1" max="60"></div>
+                <div><label>% clientes de teste definidos</label><input id="cfgExternal" type="number" min="0" max="100"></div>
+                <div class="full"><label>Notas internas</label><textarea id="cfgNotes"></textarea></div>
+              </div>
+              <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+                <button class="btn primary" onclick="saveSettings()">Aplicar configurações</button>
+              </div>
+            </div>
+            <div class="card form-card">
+              <div class="card-title"><div><h3>Pesos do índice de prontidão</h3><p>Os quatro pesos devem totalizar 100.</p></div></div>
+              <div class="weight-row"><span>Progresso ponderado</span><input id="wProgress" type="number" min="0" max="100"></div>
+              <div class="weight-row"><span>Ausência de bloqueios</span><input id="wBlockers" type="number" min="0" max="100"></div>
+              <div class="weight-row"><span>Saúde dos prazos</span><input id="wDeadlines" type="number" min="0" max="100"></div>
+              <div class="weight-row"><span>Exposição a riscos</span><input id="wRisks" type="number" min="0" max="100"></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px">
+                <span class="pill ok" id="weightTotal">Total: 100</span>
+                <button class="btn primary" onclick="saveWeights()">Aplicar pesos</button>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title"><div><h3>Qualidade dos dados</h3><p>Inconsistências detectadas automaticamente.</p></div><span class="pill warn" id="qualityCount">5 alerta(s)</span></div>
+              <div class="quality-list" id="qualityList"><div class="quality-item clickable" onclick="openEditor('roadmap',0)"><strong>Mobilização e desbloqueios Baldussi</strong><br>Item atrasado há 17 dia(s).</div><div class="quality-item clickable" onclick="openEditor('roadmap',14)"><strong>Registro de software e marca</strong><br>Item atrasado há 3 dia(s).</div><div class="quality-item clickable" onclick="openEditor('roadmap',15)"><strong>E-mails transacionais da ferramenta</strong><br>Item atrasado há 3 dia(s).</div><div class="quality-item clickable" onclick="openEditor('roadmap',16)"><strong>Modais da ferramenta</strong><br>Item atrasado há 3 dia(s).</div><div class="quality-item clickable" onclick="openEditor('roadmap',17)"><strong>Testes internos</strong><br>Progresso 100%, mas status não está como Concluído.</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><div><h3>Gerenciador de dados</h3><p>Escolha uma coleção e edite os registros em formulário.</p></div></div>
+            <div class="dataset-tabs" id="datasetTabs"><button class="dataset-tab active" onclick="activeDataset='roadmap';renderDatasetTabs();renderDatasetManager()">Roadmap</button><button class="dataset-tab " onclick="activeDataset='risks';renderDatasetTabs();renderDatasetManager()">Riscos</button><button class="dataset-tab " onclick="activeDataset='mitigationPlan';renderDatasetTabs();renderDatasetManager()">Mitigações</button><button class="dataset-tab " onclick="activeDataset='icps';renderDatasetTabs();renderDatasetManager()">ICPs</button><button class="dataset-tab " onclick="activeDataset='marketingCards';renderDatasetTabs();renderDatasetManager()">Marketing</button><button class="dataset-tab " onclick="activeDataset='policyItems';renderDatasetTabs();renderDatasetManager()">Políticas</button><button class="dataset-tab " onclick="activeDataset='decisions';renderDatasetTabs();renderDatasetManager()">Decisões</button></div>
+            <div id="datasetManager"><div style="display:flex;justify-content:flex-end;margin-bottom:9px"><button class="btn primary small" onclick="openEditor('roadmap',-1)">+ Adicionar</button></div><div class="table-wrap"><table style="min-width:0"><thead><tr><th>Registro</th><th></th></tr></thead><tbody><tr class="clickable" onclick="openEditor('roadmap',0)"><td><strong>F0 · Mobilização e desbloqueios Baldussi</strong><br><span style="color:var(--muted)">Em andamento · 95%</span></td><td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',0)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('roadmap',1)"><td><strong>F1 · Novo layout + landing page + refactor interno</strong><br><span style="color:var(--muted)">Concluído · 100%</span></td><td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',1)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('roadmap',2)"><td><strong>F7 · Testes Amazon S3/ECS</strong><br><span style="color:var(--muted)">Concluído · 100%</span></td><td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',2)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('roadmap',3)"><td><strong>F2 · Integração com  Zoom e Microsoft Teams</strong><br><span style="color:var(--muted)">Em andamento · 70%</span></td><td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',3)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('roadmap',4)"><td><strong>F9 · Teste mobile web</strong><br><span style="color:var(--muted)">Próximo · 0%</span></td><td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',4)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('roadmap',5)"><td><strong>F3 · Sistema de planos parametrizáveis</strong><br><span style="color:var(--muted)">Concluído · 100%</span></td><td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',5)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('roadmap',6)"><td><strong>F4 · Integração Stripe</strong><br><span style="color:var(--muted)">Bloqueado · 50%</span></td><td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',6)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('roadmap',7)"><td><strong>F5 · Submissão GCP e extensão</strong><br><span style="color:var(--muted)">Em andamento · 90%</span></td><td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',7)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('roadmap',8)"><td><strong>F6 · Serene Desktop</strong><br><span style="color:var(--muted)">Em andamento · 75%</span></td><td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',8)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('roadmap',9)"><td><strong>F8 · Stress test 100 reuniões simultâneas</strong><br><span style="color:var(--muted)">Pendente · 0%</span></td><td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',9)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('roadmap',10)"><td><strong>ADM1 · Definição de ferramenta de ERP</strong><br><span style="color:var(--muted)">Em andamento · 90%</span></td><td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',10)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('roadmap',11)"><td><strong>ADM2 · Conta bancária</strong><br><span style="color:var(--muted)">Concluído · 100%</span></td><td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',11)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('roadmap',12)"><td><strong>ADM3 · Stripe</strong><br><span style="color:var(--muted)">Próximo · 65%</span></td><td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',12)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('roadmap',13)"><td><strong>ADM4 · Código de parceiro no Stripe / comissionamento</strong><br><span style="color:var(--muted)">Concluído · 100%</span></td><td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',13)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('roadmap',14)"><td><strong>ADM5 · Registro de software e marca</strong><br><span style="color:var(--muted)">Em andamento · 80%</span></td><td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',14)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('roadmap',15)"><td><strong>MKT1 · E-mails transacionais da ferramenta</strong><br><span style="color:var(--muted)">Em andamento · 80%</span></td><td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',15)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('roadmap',16)"><td><strong>MKT2 · Modais da ferramenta</strong><br><span style="color:var(--muted)">Em andamento · 70%</span></td><td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',16)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('roadmap',17)"><td><strong>TST1 · Testes internos</strong><br><span style="color:var(--muted)">Em andamento · 100%</span></td><td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',17)">Editar</button></td></tr><tr class="clickable" onclick="openEditor('roadmap',18)"><td><strong>TST3 · Execução dos testes externos</strong><br><span style="color:var(--muted)">Pendente · 0%</span></td><td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',18)">Editar</button></td></tr></tbody></table></div></div>
+            <div style="height:1px;background:var(--line);margin:18px 0"></div>
+            <div class="card-title"><div><h3>JSON avançado</h3><p>Use apenas para alterações em massa. O botão valida antes de aplicar.</p></div></div>
+            <textarea id="rawJSON" class="raw-json" spellcheck="false"></textarea>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:10px">
+              <label class="btn" for="importFile">Importar JSON</label>
+              <input class="hidden-file" id="importFile" type="file" accept="application/json">
+              <button class="btn" onclick="syncRawJSON()">Atualizar JSON exibido</button>
+              <button class="btn primary" onclick="applyRawJSON()">Aplicar JSON</button>
+              <button class="btn danger" onclick="resetData()">Restaurar base original</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="drawer-backdrop" id="drawerBackdrop" onclick="closeEditor()"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head"><h3 id="drawerTitle">Editar Roadmap</h3><button class="btn ghost" onclick="closeEditor()">✕</button></div>
+  <div class="drawer-body" id="drawerBody"><div class="drawer-grid"><div class="drawer-field "><label>ID</label><input data-key="id" type="text" value="F4"></div><div class="drawer-field "><label>Área</label><select data-key="area"><option selected="">Produto</option><option>Marketing</option><option>Administrativo</option><option>Jurídico</option><option>Infraestrutura</option><option>Testes</option><option>GTM</option><option>Operação</option></select></div><div class="drawer-field full"><label>Entrega</label><textarea data-key="name">Integração Stripe</textarea></div><div class="drawer-field "><label>Responsável / frente</label><input data-key="owner" type="text" value="Produto / Desenvolvimento"></div><div class="drawer-field "><label>Início</label><input data-key="start" type="date" value="2026-07-20"></div><div class="drawer-field "><label>Fim</label><input data-key="end" type="date" value="2026-07-24"></div><div class="drawer-field "><label>Status</label><select data-key="status"><option>Concluído</option><option>Validação</option><option>Em andamento</option><option>Próximo</option><option>Pendente</option><option selected="">Bloqueado</option></select></div><div class="drawer-field "><label>Progresso (%)</label><input data-key="progress" type="number" value="50" step="1"></div><div class="drawer-field "><label>Criticidade</label><select data-key="crit"><option selected="">Alta</option><option>Média</option><option>Baixa</option></select></div><div class="drawer-field "><label>Prioridade</label><select data-key="priority"><option selected="">P0</option><option>P1</option><option>P2</option><option>P3</option></select></div><div class="drawer-field full"><label>Dependência</label><textarea data-key="dependency">Conta Stripe e documentação de produção</textarea></div><div class="drawer-field full"><label>Critério de aceite</label><textarea data-key="acceptance">Checkout testado e estrutura pronta para produção</textarea></div><div class="drawer-field full"><label>Notas</label><textarea data-key="notes"></textarea></div></div></div>
+  <div class="drawer-actions">
+    <button class="btn danger" id="drawerDelete" onclick="deleteCurrent()" style="display: inline-flex;">Excluir</button>
+    <button class="btn" onclick="closeEditor()">Cancelar</button>
+    <button class="btn primary" onclick="saveCurrent()">Salvar</button>
+  </div>
+</aside>
+<div class="toast" id="toast">Registro atualizado.</div>
+
+<script>
+const EMBEDDED_DATA = JSON.parse(document.getElementById('app-data').textContent);
+const STORAGE_KEY = 'sereneProjectDashboardV2';
+let appData = loadData();
+let currentView = 'overview';
+let editorState = null;
+let activeDataset = 'roadmap';
+
+const STATUS_ORDER = ['Bloqueado','Em andamento','Validação','Próximo','Pendente','Concluído'];
+const STATUS_COLORS = {
+  'Concluído':'#459456','Validação':'#3f708f','Em andamento':'#d8a323',
+  'Próximo':'#d78232','Pendente':'#9a9187','Bloqueado':'#c84c42'
+};
+const AREA_COLORS = {
+  'Produto':'#459456','Marketing':'#3f708f','Administrativo':'#d8a323','Jurídico':'#75599c',
+  'Infraestrutura':'#2f6670','Testes':'#805c9f','GTM':'#d78232','Operação':'#647d68'
+};
+const TONE_MAP = {ok:'ok',warn:'warn',risk:'risk',info:'info',neutral:'neutral'};
+const DATASET_LABELS = {
+  roadmap:'Roadmap',risks:'Riscos',mitigationPlan:'Mitigações',icps:'ICPs',
+  marketingCards:'Marketing',policyItems:'Políticas',decisions:'Decisões'
+};
+const SCHEMAS = {
+  roadmap:[
+    ['id','ID','text'],['area','Área','select',['Produto','Marketing','Administrativo','Jurídico','Infraestrutura','Testes','GTM','Operação']],
+    ['name','Entrega','textarea'],['owner','Responsável / frente','text'],['start','Início','date'],['end','Fim','date'],
+    ['status','Status','select',['Concluído','Validação','Em andamento','Próximo','Pendente','Bloqueado']],
+    ['progress','Progresso (%)','number'],['crit','Criticidade','select',['Alta','Média','Baixa']],
+    ['priority','Prioridade','select',['P0','P1','P2','P3']],['dependency','Dependência','textarea'],
+    ['acceptance','Critério de aceite','textarea'],['notes','Notas','textarea']
+  ],
+  risks:[
+    ['name','Risco','textarea'],['area','Área','text'],['owner','Responsável','text'],
+    ['prob','Probabilidade (1–5)','number'],['impact','Impacto (1–5)','number'],
+    ['status','Status','select',['Aberto','Mitigando','Monitorado','Encerrado']],['due','Prazo','date'],
+    ['mitigation','Mitigação','textarea']
+  ],
+  mitigationPlan:[
+    ['priority','Prioridade','text'],['front','Frente','text'],['owner','Responsável','text'],['action','Ação objetiva','textarea']
+  ],
+  icps:[
+    ['rank','Rank','number'],['name','ICP','text'],['wave','Onda','text'],['buyer','Decisor','text'],
+    ['argument','Argumento central','textarea'],['score','Score','number']
+  ],
+  marketingCards:[
+    ['title','Título','text'],['status','Status / chamada','text'],['description','Descrição','textarea'],
+    ['tone','Tom visual','select',['ok','warn','risk','info','neutral']]
+  ],
+  policyItems:[
+    ['theme','Tema','text'],['guideline','Diretriz','textarea'],['status','Status','text']
+  ],
+  decisions:[
+    ['date','Data / prazo','text'],['title','Decisão','text'],['note','Observação','textarea']
+  ]
+};
+
+function clone(v){return JSON.parse(JSON.stringify(v))}
+function loadData(){
+  try{
+    const saved=localStorage.getItem(STORAGE_KEY);
+    return saved?JSON.parse(saved):clone(EMBEDDED_DATA);
+  }catch(e){return clone(EMBEDDED_DATA)}
+}
+function esc(v=''){
+  return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+function attr(v=''){return esc(v)}
+function parseDate(v){if(!v)return null;const d=new Date(v+'T12:00:00');return isNaN(d)?null:d}
+function iso(d){return d.toISOString().slice(0,10)}
+function fmtDate(v){
+  const d=parseDate(v);return d?new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}).format(d):'—'
+}
+function fmtShort(v){
+  const d=parseDate(v);return d?new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'2-digit'}).format(d):'—'
+}
+function daysBetween(a,b){return Math.round((b-a)/86400000)}
+function clamp(n,a,b){return Math.max(a,Math.min(b,n))}
+function unique(arr){return [...new Set(arr.filter(Boolean))]}
+function weightCrit(c){return c==='Alta'?3:c==='Média'?2:1}
+function statusTone(s){
+  if(s==='Concluído'||s==='Definido'||s==='Encerrado')return 'ok';
+  if(s==='Bloqueado')return 'risk';
+  if(s==='Validação')return 'info';
+  if(s==='Em andamento'||s==='Próximo'||s==='Mitigando')return 'warn';
+  return 'neutral';
+}
+function pill(text,tone){return `<span class="pill ${tone||statusTone(text)}">${esc(text)}</span>`}
+function taskState(t){
+  const report=parseDate(appData.meta.reportDate)||new Date();
+  const end=parseDate(t.end);
+  const done=t.status==='Concluído';
+  const overdue=!!(end&&!done&&end<report);
+  const days=end?daysBetween(report,end):null;
+  const soon=days!==null&&!done&&days>=0&&days<=Number(appData.meta.dueSoonDays||7);
+  return {done,overdue,soon,days};
+}
+function deadlineLabel(t){
+  const s=taskState(t);
+  if(!t.end)return {text:'Sem prazo',cls:''};
+  if(s.done)return {text:'Concluído',cls:''};
+  if(s.overdue)return {text:`${Math.abs(s.days)}d em atraso`,cls:'overdue'};
+  if(s.days===0)return {text:'Vence hoje',cls:'soon'};
+  if(s.soon)return {text:`Vence em ${s.days}d`,cls:'soon'};
+  return {text:`${s.days}d restantes`,cls:''};
+}
+function weightedProgress(tasks){
+  if(!tasks.length)return 0;
+  const total=tasks.reduce((s,t)=>s+weightCrit(t.crit),0);
+  return Math.round(tasks.reduce((s,t)=>s+clamp(Number(t.progress)||0,0,100)*weightCrit(t.crit),0)/total);
+}
+function calcMetrics(){
+  const tasks=appData.roadmap||[];
+  const active=tasks.filter(t=>t.status!=='Concluído');
+  const blocked=active.filter(t=>t.status==='Bloqueado');
+  const overdue=active.filter(t=>taskState(t).overdue);
+  const soon=active.filter(t=>taskState(t).soon);
+  const done=tasks.filter(t=>t.status==='Concluído');
+  const progress=weightedProgress(tasks);
+  const totalWeight=tasks.reduce((s,t)=>s+weightCrit(t.crit),0)||1;
+  const blockedWeight=blocked.reduce((s,t)=>s+weightCrit(t.crit),0);
+  const overdueWeight=overdue.reduce((s,t)=>s+weightCrit(t.crit),0);
+  const blockersHealth=clamp(100-(blockedWeight/totalWeight*180),0,100);
+  const deadlinesHealth=clamp(100-(overdueWeight/totalWeight*150),0,100);
+  const openRisks=(appData.risks||[]).filter(r=>r.status!=='Encerrado');
+  const riskExposure=openRisks.length?openRisks.reduce((s,r)=>s+(Number(r.prob)||0)*(Number(r.impact)||0),0)/(openRisks.length*25):0;
+  const riskHealth=clamp(100-riskExposure*100,0,100);
+  const w=appData.meta.readinessWeights||{progress:55,blockers:20,deadlines:15,risks:10};
+  const totalW=(+w.progress||0)+(+w.blockers||0)+(+w.deadlines||0)+(+w.risks||0)||100;
+  const readiness=Math.round((progress*(+w.progress||0)+blockersHealth*(+w.blockers||0)+deadlinesHealth*(+w.deadlines||0)+riskHealth*(+w.risks||0))/totalW);
+  return {tasks,active,blocked,overdue,soon,done,progress,readiness,openRisks,riskExposure};
+}
+function readinessLabel(score){
+  if(score>=80)return ['Saudável','ok'];
+  if(score>=60)return ['Atenção','warn'];
+  return ['Crítico','risk'];
+}
+function saveLocal(){
+  try{
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(appData));
+    toast('Dados salvos neste navegador.');
+    return true;
+  }catch(e){
+    toast('Alteração aplicada. O navegador bloqueou o armazenamento local; baixe a versão atualizada para preservar os dados.');
+    return false;
+  }
+}
+function toast(msg){
+  const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');
+  clearTimeout(window.__toast);window.__toast=setTimeout(()=>el.classList.remove('show'),2200);
+}
+function setView(view){
+  currentView=view;
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+view));
+  document.querySelectorAll('.nav-btn[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
+  document.getElementById('sidebar').classList.remove('open');
+  renderView(view);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open')}
+document.querySelectorAll('.nav-btn[data-view]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
+
+function renderAll(){
+  document.getElementById('topTitle').textContent=appData.meta.title||'Serene';
+  document.getElementById('topSubtitle').textContent=appData.meta.subtitle||'';
+  document.title=appData.meta.title||'Serene';
+  fillFilterOptions();
+  renderView(currentView);
+}
+function renderView(view){
+  if(view==='overview')renderOverview();
+  if(view==='portfolio')renderPortfolio();
+  if(view==='timeline')renderTimeline();
+  if(view==='risks')renderRisks();
+  if(view==='gtm')renderGTM();
+  if(view==='governance')renderGovernance();
+  if(view==='data')renderDataView();
+}
+function renderOverview(){
+  const m=calcMetrics();
+  document.getElementById('reportDateLabel').textContent=fmtDate(appData.meta.reportDate);
+  const [label,tone]=readinessLabel(m.readiness);
+  const gaugeDeg=Math.round(m.readiness*3.6);
+  document.getElementById('kpiGrid').innerHTML=`
+    <div class="card metric-card readiness-card">
+      <div class="gauge" style="background:conic-gradient(var(--brand) ${gaugeDeg}deg,#2a3d30 ${gaugeDeg}deg)">
+        <div class="gauge-inner">${m.readiness}<small>%</small></div>
+      </div>
+      <div><div class="metric-label">Índice de prontidão</div><div class="metric-value">${label}</div><div class="metric-sub">Combina progresso, bloqueios, prazos e riscos. ${pill(label,tone)}</div></div>
+    </div>
+    ${metricCard('Progresso ponderado',m.progress+'%','Peso maior para itens críticos','info')}
+    ${metricCard('Bloqueios',m.blocked.length,'Itens impedidos de avançar',m.blocked.length?'risk':'ok')}
+    ${metricCard('Atrasados',m.overdue.length,'Não concluídos após o prazo',m.overdue.length?'risk':'ok')}
+    ${metricCard('Próximos '+(appData.meta.dueSoonDays||7)+' dias',m.soon.length,'Entregas dentro da janela',m.soon.length?'warn':'neutral')}
+    ${metricCard('Concluídos',m.done.length+'/'+m.tasks.length,'Itens finalizados no portfólio','ok')}
+  `;
+  renderAttention(m);
+  renderAreaProgress();
+  renderStatusDistribution();
+  renderNextMilestones();
+  renderSmartInsight(m);
+}
+function metricCard(label,value,sub,tone){
+  return `<div class="card metric-card"><div class="metric-label">${esc(label)}</div><div class="metric-value">${esc(value)}</div><div class="metric-sub">${esc(sub)}</div><div style="margin-top:10px">${pill(tone==='risk'?'Crítico':tone==='warn'?'Atenção':tone==='ok'?'Saudável':'Informativo',tone)}</div></div>`;
+}
+function attentionItems(){
+  const report=parseDate(appData.meta.reportDate)||new Date();
+  const list=[];
+  (appData.roadmap||[]).forEach((t,i)=>{
+    const s=taskState(t);
+    let severity=0,reason='';
+    if(t.status==='Bloqueado'){severity=100+(weightCrit(t.crit)*10);reason='Bloqueado: '+(t.dependency||'dependência não informada');}
+    else if(s.overdue){severity=80+(weightCrit(t.crit)*10)+Math.min(10,Math.abs(s.days));reason=`Prazo vencido há ${Math.abs(s.days)} dia(s).`;}
+    else if(s.soon){severity=55+(weightCrit(t.crit)*10)+(Number(appData.meta.dueSoonDays||7)-s.days);reason=s.days===0?'Vence hoje.':`Vence em ${s.days} dia(s).`;}
+    else if(t.crit==='Alta'&&t.status!=='Concluído'){severity=35;reason='Alta criticidade em aberto.';}
+    if(severity)list.push({type:'task',index:i,title:t.name,reason,severity,status:t.status});
+  });
+  (appData.risks||[]).forEach((r,i)=>{
+    const score=(+r.prob||0)*(+r.impact||0);
+    if(r.status!=='Encerrado'&&score>=16)list.push({type:'risk',index:i,title:r.name,reason:`Risco ${score}/25 · ${r.mitigation||'mitigação não informada'}`,severity:70+score,status:r.status});
+  });
+  return list.sort((a,b)=>b.severity-a.severity);
+}
+function renderAttention(m){
+  const items=attentionItems().slice(0,7);
+  document.getElementById('attentionCount').textContent=items.length+' prioridade(s)';
+  document.getElementById('attentionList').innerHTML=items.length?items.map(x=>`
+    <div class="attention-item ${x.severity>=90?'critical':''} clickable" onclick="openEditor('${x.type==='task'?'roadmap':'risks'}',${x.index})">
+      <span class="attention-dot"></span><div><strong>${esc(x.title)}</strong><p>${esc(x.reason)}</p></div>${pill(x.status)}
+    </div>`).join(''):`<div class="attention-item good"><span class="attention-dot"></span><div><strong>Nenhuma prioridade crítica detectada</strong><p>O portfólio não possui bloqueios, atrasos ou riscos altos na data-base.</p></div>${pill('Saudável','ok')}</div>`;
+}
+function renderAreaProgress(){
+  const groups={};
+  (appData.roadmap||[]).forEach(t=>(groups[t.area]||(groups[t.area]=[])).push(t));
+  document.getElementById('areaProgress').innerHTML=Object.entries(groups).sort((a,b)=>weightedProgress(b[1])-weightedProgress(a[1])).map(([area,tasks])=>{
+    const p=weightedProgress(tasks);const color=AREA_COLORS[area]||'#459456';
+    return `<div class="area-row"><strong>${esc(area)}</strong><div class="progress"><span style="width:${p}%;background:${color}"></span></div><span>${p}%</span></div>`;
+  }).join('');
+}
+function renderStatusDistribution(){
+  const tasks=appData.roadmap||[];const total=tasks.length||1;
+  const counts={};tasks.forEach(t=>counts[t.status]=(counts[t.status]||0)+1);
+  const order=STATUS_ORDER.filter(s=>counts[s]).concat(Object.keys(counts).filter(s=>!STATUS_ORDER.includes(s)));
+  const strip=order.map(s=>`<span title="${esc(s)}: ${counts[s]}" style="width:${counts[s]/total*100}%;background:${STATUS_COLORS[s]||'#777'}"></span>`).join('');
+  const legend=order.map(s=>`<div class="legend-item"><span><i class="dot" style="background:${STATUS_COLORS[s]||'#777'}"></i>${esc(s)}</span><strong>${counts[s]}</strong></div>`).join('');
+  document.getElementById('statusDistribution').innerHTML=`<div class="status-strip">${strip}</div><div class="legend">${legend}</div>`;
+}
+function decisionDateValue(s){
+  const year=(appData.meta.reportDate||'2026').slice(0,4);
+  const m=String(s||'').match(/(\d{1,2})\/(\d{1,2})/);
+  return m?parseDate(`${year}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`):null;
+}
+function renderNextMilestones(){
+  const report=parseDate(appData.meta.reportDate)||new Date();
+  const taskMilestones=(appData.roadmap||[]).filter(t=>t.status!=='Concluído'&&parseDate(t.end)).map((t,i)=>({date:parseDate(t.end),label:fmtShort(t.end),title:t.name,note:t.status,index:i,type:'roadmap'}));
+  const decisions=(appData.decisions||[]).map((d,i)=>({date:decisionDateValue(d.date),label:d.date,title:d.title,note:d.note,index:i,type:'decisions'})).filter(x=>x.date);
+  const combined=taskMilestones.concat(decisions).sort((a,b)=>Math.abs(a.date-report)-Math.abs(b.date-report)).slice(0,5);
+  document.getElementById('nextMilestones').innerHTML=combined.length?combined.map(x=>`<div class="milestone clickable" onclick="openEditor('${x.type}',${x.index})"><div class="milestone-date">${esc(x.label)}</div><div><strong>${esc(x.title)}</strong><p>${esc(x.note||'')}</p></div></div>`).join(''):'<div class="empty">Nenhum marco registrado.</div>';
+}
+function renderSmartInsight(m){
+  let title='Portfólio sob controle',text='Não há bloqueios ou atrasos relevantes na data-base.';
+  if(m.blocked.length){
+    const top=m.blocked.sort((a,b)=>weightCrit(b.crit)-weightCrit(a.crit))[0];
+    title='O gargalo é desbloqueio, não volume de execução';
+    text=`Existem ${m.blocked.length} item(ns) bloqueado(s). O mais crítico é “${top.name}”. Acelerar novas frentes antes de resolver a dependência tende a aumentar trabalho parado.`;
+  }else if(m.overdue.length){
+    title='A prioridade é fechar pendências vencidas';
+    text=`Há ${m.overdue.length} entrega(s) atrasada(s). O avanço médio do projeto pode mascarar risco de lançamento enquanto itens críticos permanecem abertos.`;
+  }else if(m.soon.length>=3){
+    title='Concentração de entregas na janela imediata';
+    text=`${m.soon.length} itens vencem nos próximos ${appData.meta.dueSoonDays||7} dias. O risco principal é dispersão. Limite novas entradas e proteja capacidade para conclusão e validação.`;
+  }else if(m.riskExposure>.55){
+    title='O progresso não elimina a exposição a risco';
+    text='A matriz apresenta risco agregado elevado. Trate mitigação como entrega do projeto, com responsável e prazo, e não como observação lateral.';
+  }
+  document.getElementById('smartInsight').innerHTML=`<h3>${esc(title)}</h3><p>${esc(text)}</p>`;
+}
+function fillFilterOptions(){
+  const tasks=appData.roadmap||[];
+  const areas=unique(tasks.map(t=>t.area)).sort();
+  const statuses=unique(tasks.map(t=>t.status)).sort();
+  const crits=unique(tasks.map(t=>t.crit)).sort();
+  setOptions('filterArea',areas,'Todas as áreas');
+  setOptions('timelineArea',areas,'Todas as áreas');
+  setOptions('filterStatus',statuses,'Todos os status');
+  setOptions('timelineStatus',statuses,'Todos os status');
+  setOptions('filterCrit',crits,'Todas as criticidades');
+}
+function setOptions(id,vals,placeholder){
+  const el=document.getElementById(id);if(!el)return;
+  const current=el.value;el.innerHTML=`<option value="">${esc(placeholder)}</option>`+vals.map(v=>`<option ${v===current?'selected':''}>${esc(v)}</option>`).join('');
+}
+function filteredTasks(){
+  const q=(document.getElementById('taskSearch')?.value||'').toLowerCase();
+  const area=document.getElementById('filterArea')?.value||'';
+  const status=document.getElementById('filterStatus')?.value||'';
+  const crit=document.getElementById('filterCrit')?.value||'';
+  let rows=(appData.roadmap||[]).map((t,index)=>({t,index})).filter(({t})=>{
+    const blob=[t.id,t.name,t.area,t.status,t.owner,t.dependency,t.acceptance].join(' ').toLowerCase();
+    return (!q||blob.includes(q))&&(!area||t.area===area)&&(!status||t.status===status)&&(!crit||t.crit===crit);
+  });
+  const sort=document.getElementById('filterSort')?.value||'severity';
+  rows.sort((a,b)=>{
+    if(sort==='end')return (a.t.end||'9999').localeCompare(b.t.end||'9999');
+    if(sort==='progress')return (+b.t.progress||0)-(+a.t.progress||0);
+    if(sort==='area')return (a.t.area||'').localeCompare(b.t.area||'');
+    const sev=t=>t.status==='Bloqueado'?100:taskState(t).overdue?80:t.crit==='Alta'?60:t.crit==='Média'?40:20;
+    return sev(b.t)-sev(a.t)||((a.t.end||'9999').localeCompare(b.t.end||'9999'));
+  });
+  return rows;
+}
+function renderPortfolio(){
+  fillFilterOptions();
+  const rows=filteredTasks();
+  document.getElementById('portfolioCount').textContent=rows.length;
+  const html=rows.length?`<table><thead><tr><th>ID</th><th>Entrega</th><th>Área / owner</th><th>Status</th><th>Prazo</th><th>Progresso</th><th>Criticidade</th><th>Dependência</th><th></th></tr></thead><tbody>
+    ${rows.map(({t,index})=>{
+      const dl=deadlineLabel(t);
+      return `<tr class="clickable" onclick="openEditor('roadmap',${index})">
+        <td><strong>${esc(t.id)}</strong><br><span class="pill neutral">${esc(t.priority||'')}</span></td>
+        <td class="name-cell"><strong>${esc(t.name)}</strong><span>${esc(t.acceptance||'')}</span></td>
+        <td><strong>${esc(t.area)}</strong><br><span style="color:var(--muted)">${esc(t.owner||'—')}</span></td>
+        <td>${pill(t.status)}</td>
+        <td><span class="deadline ${dl.cls}">${fmtShort(t.end)}</span><br><span class="deadline ${dl.cls}" style="font-size:10px">${esc(dl.text)}</span></td>
+        <td><div class="mini-progress"><div class="progress"><span style="width:${clamp(+t.progress||0,0,100)}%"></span></div><small>${clamp(+t.progress||0,0,100)}%</small></div></td>
+        <td>${pill(t.crit,t.crit==='Alta'?'risk':t.crit==='Média'?'warn':'neutral')}</td>
+        <td>${esc(t.dependency||'—')}</td>
+        <td><button class="btn small" onclick="event.stopPropagation();openEditor('roadmap',${index})">Editar</button></td>
+      </tr>`;
+    }).join('')}</tbody></table>`:'<div class="empty">Nenhum item corresponde aos filtros.</div>';
+  document.getElementById('portfolioTableWrap').innerHTML=html;
+}
+function monday(d){const x=new Date(d);const day=(x.getDay()+6)%7;x.setDate(x.getDate()-day);return x}
+function renderTimeline(){
+  fillFilterOptions();
+  const area=document.getElementById('timelineArea')?.value||'';
+  const status=document.getElementById('timelineStatus')?.value||'';
+  const rows=(appData.roadmap||[]).map((t,index)=>({t,index})).filter(({t})=>(!area||t.area===area)&&(!status||t.status===status)&&parseDate(t.start)&&parseDate(t.end)).sort((a,b)=>a.t.start.localeCompare(b.t.start));
+  if(!rows.length){document.getElementById('timelineShell').innerHTML='<div class="empty">Nenhum item com datas válidas.</div>';return}
+  let min=monday(new Date(Math.min(...rows.map(({t})=>parseDate(t.start)))));
+  let max=new Date(Math.max(...rows.map(({t})=>parseDate(t.end))));
+  max=monday(max);max.setDate(max.getDate()+6);
+  const days=Math.max(7,daysBetween(min,max)+1);
+  const weeks=Math.ceil(days/7);
+  document.getElementById('timelineRange').textContent=`${fmtDate(iso(min))} — ${fmtDate(iso(max))}`;
+  const heads=Array.from({length:weeks},(_,i)=>{const d=new Date(min);d.setDate(d.getDate()+i*7);return `<div class="week-head">S${i+1}<br>${fmtShort(iso(d))}</div>`}).join('');
+  const body=rows.map(({t,index})=>{
+    const start=parseDate(t.start),end=parseDate(t.end);
+    const left=clamp(daysBetween(min,start)/days*100,0,100);
+    const width=clamp((daysBetween(start,end)+1)/days*100,1.4,100-left);
+    const color=t.status==='Bloqueado'?STATUS_COLORS.Bloqueado:(AREA_COLORS[t.area]||'#459456');
+    return `<div class="timeline-row clickable" onclick="openEditor('roadmap',${index})">
+      <div class="timeline-label"><strong>${esc(t.id)} · ${esc(t.name)}</strong><span>${esc(t.area)} · ${esc(t.status)}</span></div>
+      <div class="timeline-track" style="--week-width:calc(100% / ${weeks})">
+        <div class="timeline-bar" title="${esc(t.name)}" style="left:${left}%;width:${width}%;background:${color};--task-progress:${clamp(+t.progress||0,0,100)}%"><span>${fmtShort(t.start)}–${fmtShort(t.end)} · ${clamp(+t.progress||0,0,100)}%</span></div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('timelineShell').innerHTML=`<div class="timeline-head"><div class="timeline-label"><strong>Entrega</strong><span>${rows.length} item(ns)</span></div><div class="week-heads" style="grid-template-columns:repeat(${weeks},minmax(100px,1fr))">${heads}</div></div>${body}`;
+}
+function renderRisks(){
+  const risks=(appData.risks||[]).map((r,index)=>({r,index,score:(+r.prob||0)*(+r.impact||0)})).sort((a,b)=>b.score-a.score);
+  const matrix=[];
+  for(let impact=5;impact>=1;impact--){
+    matrix.push(`<div class="risk-axis-y">${impact}</div>`);
+    for(let prob=1;prob<=5;prob++){
+      const score=impact*prob,cls=score>=16?'high':score>=8?'med':'low';
+      const tokens=risks.filter(x=>+x.r.impact===impact&&+x.r.prob===prob).map(x=>`<button class="risk-token" title="${esc(x.r.name)}" onclick="openEditor('risks',${x.index})">R${x.index+1}</button>`).join('');
+      matrix.push(`<div class="risk-cell ${cls}">${tokens}</div>`);
+    }
+  }
+  matrix.push('<div></div>');
+  for(let p=1;p<=5;p++)matrix.push(`<div class="risk-axis-x">${p}</div>`);
+  document.getElementById('riskMatrix').innerHTML=matrix.join('');
+  const critical=risks.filter(x=>x.score>=16&&x.r.status!=='Encerrado').length;
+  document.getElementById('criticalRiskCount').textContent=critical+' crítico(s)';
+  document.getElementById('riskList').innerHTML=risks.length?risks.map(({r,index,score})=>`
+    <div class="risk-card clickable" onclick="openEditor('risks',${index})">
+      <div><div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap"><h4>${esc(r.name)}</h4>${pill(r.status||'Aberto')}</div>
+      <p>${esc(r.area||'')} · Prob. ${esc(r.prob)}/5 · Impacto ${esc(r.impact)}/5</p>
+      <p><strong>Mitigação:</strong> ${esc(r.mitigation||'Não informada')}</p></div>
+      <div class="risk-score">${score}<small style="font-size:9px;color:var(--muted)">/25</small></div>
+    </div>`).join(''):'<div class="empty">Nenhum risco registrado.</div>';
+  renderMitigationTable();
+}
+function renderMitigationTable(){
+  const rows=(appData.mitigationPlan||[]).map((x,i)=>`<tr class="clickable" onclick="openEditor('mitigationPlan',${i})"><td>${esc(x.priority)}</td><td><strong>${esc(x.front)}</strong></td><td>${esc(x.owner)}</td><td>${esc(x.action)}</td><td><button class="btn small" onclick="event.stopPropagation();openEditor('mitigationPlan',${i})">Editar</button></td></tr>`).join('');
+  document.getElementById('mitigationTableWrap').innerHTML=rows?`<table><thead><tr><th>#</th><th>Frente</th><th>Responsável</th><th>Ação</th><th></th></tr></thead><tbody>${rows}</tbody></table>`:'<div class="empty">Nenhuma ação registrada.</div>';
+}
+function renderGTM(){
+  const icps=(appData.icps||[]).map((x,i)=>({x,i})).sort((a,b)=>(+a.x.rank||99)-(+b.x.rank||99));
+  document.getElementById('icpList').innerHTML=icps.map(({x,i})=>`<div class="rank-card clickable" onclick="openEditor('icps',${i})"><div class="rank-number">${esc(x.rank)}</div><div><strong>${esc(x.name)}</strong><p>${esc(x.wave)} · Decisor: ${esc(x.buyer)}</p><p>${esc(x.argument)}</p></div><div class="rank-score">${esc(x.score)}</div></div>`).join('');
+  const relevant=(appData.roadmap||[]).map((t,i)=>({t,i})).filter(({t})=>['Administrativo','Jurídico','Marketing','Testes','Infraestrutura'].includes(t.area)).sort((a,b)=>{
+    const sa=a.t.status==='Bloqueado'?100:taskState(a.t).overdue?80:a.t.crit==='Alta'?60:20;
+    const sb=b.t.status==='Bloqueado'?100:taskState(b.t).overdue?80:b.t.crit==='Alta'?60:20;return sb-sa;
+  }).slice(0,7);
+  document.getElementById('opsState').innerHTML=relevant.map(({t,i})=>{
+    const s=taskState(t);const reason=t.status==='Bloqueado'?'Bloqueado por dependência.':s.overdue?`${Math.abs(s.days)} dia(s) em atraso.`:`${t.progress}% concluído.`;
+    return `<div class="attention-item ${t.status==='Bloqueado'||s.overdue?'critical':''} clickable" onclick="openEditor('roadmap',${i})"><span class="attention-dot"></span><div><strong>${esc(t.name)}</strong><p>${esc(t.area)} · ${esc(reason)}</p></div>${pill(t.status)}</div>`;
+  }).join('')||'<div class="empty">Nenhuma frente operacional registrada.</div>';
+  document.getElementById('marketingGrid').innerHTML=(appData.marketingCards||[]).map((c,i)=>`<div class="info-card clickable" onclick="openEditor('marketingCards',${i})"><h4>${esc(c.title)}</h4>${pill(c.status,TONE_MAP[c.tone]||'info')}<p>${esc(c.description)}</p></div>`).join('');
+}
+function renderGovernance(){
+  const policies=(appData.policyItems||[]).map((p,i)=>`<tr class="clickable" onclick="openEditor('policyItems',${i})"><td><strong>${esc(p.theme)}</strong></td><td>${esc(p.guideline)}</td><td>${pill(p.status)}</td><td><button class="btn small" onclick="event.stopPropagation();openEditor('policyItems',${i})">Editar</button></td></tr>`).join('');
+  document.getElementById('policyTableWrap').innerHTML=policies?`<table class="policy-table"><thead><tr><th>Tema</th><th>Diretriz</th><th>Status</th><th></th></tr></thead><tbody>${policies}</tbody></table>`:'<div class="empty">Nenhuma política registrada.</div>';
+  document.getElementById('decisionList').innerHTML=(appData.decisions||[]).map((d,i)=>`<div class="milestone clickable" onclick="openEditor('decisions',${i})"><div class="milestone-date">${esc(d.date)}</div><div><strong>${esc(d.title)}</strong><p>${esc(d.note)}</p></div></div>`).join('');
+  document.getElementById('sourceGrid').innerHTML=(appData.sources||[]).map(s=>`<div class="source-card"><strong>${esc(s.name)}</strong><p>${esc(s.use)}</p></div>`).join('');
+}
+function renderDataView(){
+  loadSettingsForm();
+  renderQuality();
+  renderDatasetTabs();
+  renderDatasetManager();
+  syncRawJSON();
+}
+function loadSettingsForm(){
+  const m=appData.meta||{};
+  document.getElementById('cfgTitle').value=m.title||'';
+  document.getElementById('cfgSubtitle').value=m.subtitle||'';
+  document.getElementById('cfgReportDate').value=m.reportDate||'';
+  document.getElementById('cfgDueSoon').value=m.dueSoonDays||7;
+  document.getElementById('cfgExternal').value=m.externalClientsPercent||0;
+  document.getElementById('cfgNotes').value=m.notes||'';
+  const w=m.readinessWeights||{};
+  document.getElementById('wProgress').value=w.progress??55;
+  document.getElementById('wBlockers').value=w.blockers??20;
+  document.getElementById('wDeadlines').value=w.deadlines??15;
+  document.getElementById('wRisks').value=w.risks??10;
+  updateWeightTotal();
+}
+['wProgress','wBlockers','wDeadlines','wRisks'].forEach(id=>document.addEventListener('input',e=>{if(e.target.id===id)updateWeightTotal()}));
+function updateWeightTotal(){
+  const total=['wProgress','wBlockers','wDeadlines','wRisks'].reduce((s,id)=>s+(+document.getElementById(id)?.value||0),0);
+  const el=document.getElementById('weightTotal');if(el){el.textContent='Total: '+total;el.className='pill '+(total===100?'ok':'risk')}
+}
+function saveSettings(){
+  appData.meta.title=document.getElementById('cfgTitle').value.trim();
+  appData.meta.subtitle=document.getElementById('cfgSubtitle').value.trim();
+  appData.meta.reportDate=document.getElementById('cfgReportDate').value;
+  appData.meta.dueSoonDays=clamp(+document.getElementById('cfgDueSoon').value||7,1,60);
+  appData.meta.externalClientsPercent=clamp(+document.getElementById('cfgExternal').value||0,0,100);
+  appData.meta.notes=document.getElementById('cfgNotes').value;
+  saveLocal();renderAll();toast('Configurações aplicadas.');
+}
+function saveWeights(){
+  const vals={
+    progress:+document.getElementById('wProgress').value||0,
+    blockers:+document.getElementById('wBlockers').value||0,
+    deadlines:+document.getElementById('wDeadlines').value||0,
+    risks:+document.getElementById('wRisks').value||0
+  };
+  const total=Object.values(vals).reduce((a,b)=>a+b,0);
+  if(total!==100){toast('Os pesos precisam totalizar 100.');return}
+  appData.meta.readinessWeights=vals;saveLocal();renderAll();toast('Pesos atualizados.');
+}
+function dataQualityIssues(){
+  const issues=[];
+  (appData.roadmap||[]).forEach((t,i)=>{
+    const s=taskState(t);
+    if((+t.progress||0)>=100&&t.status!=='Concluído')issues.push({dataset:'roadmap',index:i,title:t.name,msg:'Progresso 100%, mas status não está como Concluído.'});
+    if(t.status==='Concluído'&&(+t.progress||0)<100)issues.push({dataset:'roadmap',index:i,title:t.name,msg:'Status Concluído, mas progresso abaixo de 100%.'});
+    if(parseDate(t.start)&&parseDate(t.end)&&parseDate(t.start)>parseDate(t.end))issues.push({dataset:'roadmap',index:i,title:t.name,msg:'Data de início posterior à data final.'});
+    if(s.overdue)issues.push({dataset:'roadmap',index:i,title:t.name,msg:`Item atrasado há ${Math.abs(s.days)} dia(s).`});
+    if(!t.owner)issues.push({dataset:'roadmap',index:i,title:t.name,msg:'Responsável não informado.'});
+  });
+  (appData.risks||[]).forEach((r,i)=>{
+    if((+r.prob||0)<1||(+r.prob||0)>5||(+r.impact||0)<1||(+r.impact||0)>5)issues.push({dataset:'risks',index:i,title:r.name,msg:'Probabilidade e impacto devem estar entre 1 e 5.'});
+    if((+r.prob||0)*(+r.impact||0)>=16&&r.status!=='Encerrado'&&!r.owner)issues.push({dataset:'risks',index:i,title:r.name,msg:'Risco crítico sem responsável.'});
+  });
+  return issues;
+}
+function renderQuality(){
+  const issues=dataQualityIssues();
+  document.getElementById('qualityCount').textContent=issues.length+' alerta(s)';
+  document.getElementById('qualityList').innerHTML=issues.length?issues.map(x=>`<div class="quality-item clickable" onclick="openEditor('${x.dataset}',${x.index})"><strong>${esc(x.title)}</strong><br>${esc(x.msg)}</div>`).join(''):'<div class="quality-item"><strong>Base consistente.</strong><br>Nenhuma inconsistência automática foi detectada.</div>';
+}
+function renderDatasetTabs(){
+  document.getElementById('datasetTabs').innerHTML=Object.entries(DATASET_LABELS).map(([k,v])=>`<button class="dataset-tab ${activeDataset===k?'active':''}" onclick="activeDataset='${k}';renderDatasetTabs();renderDatasetManager()">${esc(v)}</button>`).join('');
+}
+function datasetSummary(item,dataset){
+  if(dataset==='roadmap')return [item.id+' · '+item.name,item.status+' · '+item.progress+'%'];
+  if(dataset==='risks')return [item.name,`Score ${(+item.prob||0)*(+item.impact||0)}/25 · ${item.status||'Aberto'}`];
+  if(dataset==='mitigationPlan')return [item.front,item.action];
+  if(dataset==='icps')return [item.rank+'. '+item.name,item.wave+' · '+item.score];
+  if(dataset==='marketingCards')return [item.title,item.status];
+  if(dataset==='policyItems')return [item.theme,item.status];
+  if(dataset==='decisions')return [item.title,item.date];
+  return ['Registro',''];
+}
+function renderDatasetManager(){
+  const arr=appData[activeDataset]||[];
+  const rows=arr.map((x,i)=>{const [title,sub]=datasetSummary(x,activeDataset);return `<tr class="clickable" onclick="openEditor('${activeDataset}',${i})"><td><strong>${esc(title)}</strong><br><span style="color:var(--muted)">${esc(sub||'')}</span></td><td><button class="btn small" onclick="event.stopPropagation();openEditor('${activeDataset}',${i})">Editar</button></td></tr>`}).join('');
+  document.getElementById('datasetManager').innerHTML=`<div style="display:flex;justify-content:flex-end;margin-bottom:9px"><button class="btn primary small" onclick="openEditor('${activeDataset}',-1)">+ Adicionar</button></div><div class="table-wrap"><table style="min-width:0"><thead><tr><th>Registro</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="2" class="empty">Sem registros.</td></tr>'}</tbody></table></div>`;
+}
+function defaultRecord(dataset){
+  if(dataset==='roadmap')return {id:'NOVO',area:'Produto',name:'Nova entrega',owner:'',start:appData.meta.reportDate,end:appData.meta.reportDate,status:'Pendente',progress:0,crit:'Média',priority:'P1',dependency:'',acceptance:'',notes:''};
+  if(dataset==='risks')return {name:'Novo risco',area:'',owner:'',prob:3,impact:3,status:'Aberto',due:'',mitigation:''};
+  if(dataset==='mitigationPlan')return {priority:String((appData.mitigationPlan||[]).length+1),front:'',owner:'',action:''};
+  if(dataset==='icps')return {rank:(appData.icps||[]).length+1,name:'Novo ICP',wave:'',buyer:'',argument:'',score:80};
+  if(dataset==='marketingCards')return {title:'Novo card',status:'',description:'',tone:'info'};
+  if(dataset==='policyItems')return {theme:'Nova política',guideline:'',status:'Em definição'};
+  if(dataset==='decisions')return {date:'',title:'Nova decisão',note:''};
+  return {};
+}
+function openEditor(dataset,index){
+  if(!SCHEMAS[dataset])return;
+  const isNew=index<0;
+  const record=isNew?defaultRecord(dataset):clone(appData[dataset][index]);
+  editorState={dataset,index,isNew,record};
+  document.getElementById('drawerTitle').textContent=(isNew?'Adicionar ':'Editar ')+(DATASET_LABELS[dataset]||'registro');
+  document.getElementById('drawerDelete').style.display=isNew?'none':'inline-flex';
+  const fields=SCHEMAS[dataset].map(([key,label,type,opts])=>{
+    const val=record[key]??'';
+    const full=type==='textarea'||['name','dependency','acceptance','mitigation','action','guideline','note','description'].includes(key);
+    let input='';
+    if(type==='select')input=`<select data-key="${key}">${opts.map(o=>`<option ${String(o)===String(val)?'selected':''}>${esc(o)}</option>`).join('')}</select>`;
+    else if(type==='textarea')input=`<textarea data-key="${key}">${esc(val)}</textarea>`;
+    else input=`<input data-key="${key}" type="${type}" value="${attr(val)}" ${type==='number'?'step="1"':''}>`;
+    return `<div class="drawer-field ${full?'full':''}"><label>${esc(label)}</label>${input}</div>`;
+  }).join('');
+  document.getElementById('drawerBody').innerHTML=`<div class="drawer-grid">${fields}</div>`;
+  document.getElementById('drawerBackdrop').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+}
+function closeEditor(){
+  document.getElementById('drawerBackdrop').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+  editorState=null;
+}
+function saveCurrent(){
+  if(!editorState)return;
+  const {dataset,index,isNew}=editorState;
+  const record={};
+  document.querySelectorAll('#drawerBody [data-key]').forEach(el=>{
+    const key=el.dataset.key;
+    let v=el.value;
+    if(el.type==='number')v=Number(v);
+    record[key]=v;
+  });
+  if(dataset==='roadmap'){
+    record.progress=clamp(+record.progress||0,0,100);
+    if(!record.name.trim()){toast('Informe o nome da entrega.');return}
+  }
+  if(dataset==='risks'){
+    record.prob=clamp(+record.prob||1,1,5);record.impact=clamp(+record.impact||1,1,5);
+  }
+  if(!appData[dataset])appData[dataset]=[];
+  if(isNew)appData[dataset].push(record);else appData[dataset][index]=record;
+  saveLocal();closeEditor();renderAll();toast('Registro atualizado.');
+}
+function deleteCurrent(){
+  if(!editorState||editorState.isNew)return;
+  if(!confirm('Excluir este registro?'))return;
+  appData[editorState.dataset].splice(editorState.index,1);
+  saveLocal();closeEditor();renderAll();toast('Registro excluído.');
+}
+function syncRawJSON(){
+  const el=document.getElementById('rawJSON');if(el)el.value=JSON.stringify(appData,null,2);
+}
+function applyRawJSON(){
+  try{
+    const parsed=JSON.parse(document.getElementById('rawJSON').value);
+    if(!parsed.meta||!Array.isArray(parsed.roadmap))throw new Error('Estrutura inválida');
+    appData=parsed;saveLocal();renderAll();toast('JSON aplicado.');
+  }catch(e){toast('JSON inválido: '+e.message)}
+}
+function exportJSON(){
+  downloadBlob(JSON.stringify(appData,null,2),'serene_dashboard_dados.json','application/json');
+}
+function importJSON(file){
+  const reader=new FileReader();
+  reader.onload=()=>{try{const parsed=JSON.parse(reader.result);if(!parsed.meta||!Array.isArray(parsed.roadmap))throw new Error('Estrutura inválida');appData=parsed;saveLocal();renderAll();toast('JSON importado.')}catch(e){toast('Arquivo inválido: '+e.message)}};
+  reader.readAsText(file);
+}
+document.getElementById('importFile').addEventListener('change',e=>{if(e.target.files[0])importJSON(e.target.files[0]);e.target.value=''});
+function csvCell(v){const s=String(v??'').replace(/"/g,'""');return `"${s}"`}
+function exportRoadmapCSV(){
+  const cols=['id','area','name','owner','start','end','status','progress','crit','priority','dependency','acceptance','notes'];
+  const csv=[cols.join(';')].concat((appData.roadmap||[]).map(r=>cols.map(c=>csvCell(r[c])).join(';'))).join('\n');
+  downloadBlob('\ufeff'+csv,'serene_roadmap.csv','text/csv;charset=utf-8');
+}
+function downloadBlob(content,name,type){
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);
+}
+function downloadHTML(){
+  const cloneDoc=document.documentElement.cloneNode(true);
+  cloneDoc.querySelector('#app-data').textContent=JSON.stringify(appData,null,2).replace(/<\/script>/gi,'<\\/script>');
+  cloneDoc.querySelector('#drawer')?.classList.remove('open');
+  cloneDoc.querySelector('#drawerBackdrop')?.classList.remove('open');
+  cloneDoc.querySelector('#sidebar')?.classList.remove('open');
+  cloneDoc.querySelector('#toast')?.classList.remove('show');
+  const html='<!DOCTYPE html>\n'+cloneDoc.outerHTML;
+  downloadBlob(html,'serene_dashboard_executivo_v2.html','text/html;charset=utf-8');
+}
+function resetData(){
+  if(!confirm('Restaurar a base original embutida neste arquivo? As alterações locais serão perdidas.'))return;
+  appData=clone(EMBEDDED_DATA);try{localStorage.removeItem(STORAGE_KEY)}catch(e){}renderAll();toast('Base original restaurada.');
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeEditor()});
+renderAll();
+</script>
+
+</body></html>
